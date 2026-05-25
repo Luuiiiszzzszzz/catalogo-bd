@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>BD Studio — Admin</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap');
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --pink: #c23d8e; --pink-dark: #8a1550;
+    --gold: #c9a84c; --bg: #0a0a0a; --bg2: #111;
+    --border: #1e1e1e; --text: #e0e0e0; --dim: #888;
+  }
+  body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; min-height: 100vh; }
+
+  /* ── LOGIN ── */
+  #loginScreen {
+    display: flex; flex-direction: column; align-items: center;
+    justify-content: center; min-height: 100vh; padding: 20px;
+  }
+  .login-box {
+    background: var(--bg2); border: 1px solid #2a2a2a;
+    border-radius: 8px; padding: 40px; width: 100%; max-width: 380px; text-align: center;
+  }
+  .login-logo { font-size: 2.5rem; letter-spacing: 0.3em; color: var(--pink); margin-bottom: 4px; }
+  .login-sub  { font-size: 0.75rem; color: #555; letter-spacing: 0.3em; margin-bottom: 32px; }
+  .login-input {
+    width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a; color: var(--text);
+    font-family: 'Rajdhani', sans-serif; font-size: 1rem; padding: 12px 16px;
+    border-radius: 4px; margin-bottom: 14px; outline: none; letter-spacing: 0.1em; text-align: center;
+  }
+  .login-input:focus { border-color: var(--pink); }
+  .login-btn {
+    width: 100%; background: var(--pink); border: none; color: #fff;
+    font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700;
+    letter-spacing: 0.2em; padding: 13px; border-radius: 4px; cursor: pointer; transition: background 0.2s;
+  }
+  .login-btn:hover { background: var(--pink-dark); }
+  .login-error { color: #e63946; font-size: 0.85rem; margin-top: 10px; display: none; }
+
+  /* ── ADMIN ── */
+  #adminPanel { display: none; padding: 28px 20px; max-width: 860px; margin: 0 auto; }
+  .admin-header {
+    display: flex; justify-content: space-between; align-items: center;
+    border-bottom: 1px solid var(--border); padding-bottom: 18px; margin-bottom: 28px;
+  }
+  .admin-title { font-size: 1.4rem; letter-spacing: 0.3em; color: var(--pink); }
+  .logout-btn {
+    background: none; border: 1px solid #333; color: var(--dim);
+    font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; letter-spacing: 0.15em;
+    padding: 6px 16px; cursor: pointer; border-radius: 3px; transition: all 0.2s;
+  }
+  .logout-btn:hover { border-color: #e63946; color: #e63946; }
+
+  .sec-title {
+    font-size: 0.85rem; letter-spacing: 0.25em; color: var(--dim);
+    text-transform: uppercase; margin-bottom: 14px;
+    border-left: 3px solid var(--pink); padding-left: 12px;
+  }
+  .card-panel {
+    background: var(--bg2); border: 1px solid var(--border);
+    border-radius: 6px; padding: 24px; margin-bottom: 24px;
+  }
+
+  /* ── FORM ── */
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
+  @media(max-width:560px){ .form-row { grid-template-columns: 1fr; } }
+  .form-group { display: flex; flex-direction: column; gap: 6px; }
+  .form-label { font-size: 0.72rem; letter-spacing: 0.2em; color: var(--dim); }
+  .form-input {
+    background: #0d0d0d; border: 1px solid #2a2a2a; color: var(--text);
+    font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;
+    padding: 10px 14px; border-radius: 4px; outline: none; transition: border-color 0.2s;
+  }
+  .form-input:focus { border-color: var(--pink); }
+  .form-full { grid-column: 1 / -1; }
+
+  /* ── UPLOADS ── */
+  .uploads-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
+  @media(max-width:560px){ .uploads-row { grid-template-columns: 1fr; } }
+
+  .upload-box {
+    border: 2px dashed #2a2a2a; border-radius: 6px; padding: 24px 16px;
+    text-align: center; cursor: pointer; transition: all 0.25s; position: relative; min-height: 130px;
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
+  }
+  .upload-box:hover { border-color: var(--pink); background: rgba(194,61,142,0.04); }
+  .upload-box.done { border-color: #4caf50; border-style: solid; }
+  .upload-box.done .upload-icon { color: #4caf50; }
+  .upload-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+  .upload-icon { font-size: 2rem; }
+  .upload-label { font-size: 0.8rem; color: var(--dim); letter-spacing: 0.1em; }
+  .upload-name { font-size: 0.82rem; color: var(--pink); margin-top: 4px; word-break: break-all; }
+  .upload-size { font-size: 0.72rem; color: #555; }
+
+  .img-preview {
+    width: 100%; height: 100px; object-fit: contain;
+    border-radius: 4px; margin-top: 8px; display: none;
+  }
+  .glb-ok { display: none; flex-direction: column; align-items: center; gap: 4px; }
+
+  /* ── BOTÃO ── */
+  .gen-btn {
+    width: 100%; background: linear-gradient(135deg, var(--pink), var(--pink-dark));
+    border: none; color: #fff; font-family: 'Rajdhani', sans-serif;
+    font-size: 1.05rem; font-weight: 700; letter-spacing: 0.25em;
+    padding: 14px; border-radius: 4px; cursor: pointer; transition: opacity 0.2s;
+    box-shadow: 0 4px 20px rgba(194,61,142,0.35);
+  }
+  .gen-btn:hover { opacity: 0.88; }
+  .gen-btn:disabled { background: #222; color: #555; box-shadow: none; cursor: not-allowed; }
+
+  /* ── PROGRESSO ── */
+  .progress-wrap { margin: 16px 0; display: none; }
+  .progress-bar { height: 3px; background: #1e1e1e; border-radius: 2px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--pink), var(--pink-dark)); width: 0%; transition: width 0.4s; }
+  .progress-msg { font-size: 0.8rem; color: var(--dim); text-align: center; margin-top: 8px; }
+
+  /* ── RESULTADO ── */
+  #resultPanel { display: none; }
+
+  .steps { list-style: none; margin-bottom: 20px; }
+  .steps li {
+    display: flex; align-items: flex-start; gap: 12px;
+    padding: 10px 0; border-bottom: 1px solid #151515; font-size: 0.88rem; color: #aaa;
+  }
+  .steps li:last-child { border: none; }
+  .step-num {
+    background: var(--pink); color: #fff; border-radius: 50%;
+    width: 22px; height: 22px; min-width: 22px; display: flex; align-items: center;
+    justify-content: center; font-size: 0.7rem; font-weight: 700;
+  }
+
+  .code-wrap { background: #0d0d0d; border: 1px solid var(--border); border-radius: 4px; padding: 14px; margin-bottom: 16px; position: relative; }
+  .code-wrap pre { font-family: monospace; font-size: 0.76rem; color: var(--gold); white-space: pre-wrap; word-break: break-all; max-height: 280px; overflow-y: auto; }
+  .copy-btn {
+    position: absolute; top: 10px; right: 10px;
+    background: #1e1e1e; border: 1px solid #333; color: var(--dim);
+    font-family: 'Rajdhani', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em;
+    padding: 3px 12px; cursor: pointer; border-radius: 3px; transition: all 0.2s;
+  }
+  .copy-btn:hover { border-color: var(--pink); color: var(--pink); }
+  .copy-btn.ok { border-color: #4caf50; color: #4caf50; }
+
+  .info-box {
+    background: rgba(194,61,142,0.05); border: 1px solid rgba(194,61,142,0.2);
+    border-radius: 4px; padding: 14px 16px; font-size: 0.85rem; color: #aaa;
+    line-height: 1.7; margin-bottom: 16px;
+  }
+  .info-box strong { color: var(--pink); }
+  .info-box code { color: var(--gold); background: #0d0d0d; padding: 1px 6px; border-radius: 2px; }
+
+  /* Download GLB */
+  .glb-download-box {
+    background: rgba(76,175,80,0.06); border: 1px solid rgba(76,175,80,0.25);
+    border-radius: 4px; padding: 16px; margin-bottom: 16px;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
+  }
+  .glb-info { display: flex; flex-direction: column; gap: 2px; }
+  .glb-info-title { font-size: 0.8rem; letter-spacing: 0.15em; color: #4caf50; }
+  .glb-info-sub { font-size: 0.82rem; color: var(--dim); }
+  .glb-dl-btn {
+    background: #4caf50; border: none; color: #fff;
+    font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; font-weight: 700;
+    letter-spacing: 0.15em; padding: 8px 20px; border-radius: 4px; cursor: pointer;
+    transition: background 0.2s; white-space: nowrap;
+  }
+  .glb-dl-btn:hover { background: #388e3c; }
+
+  .badges { display: flex; gap: 10px; flex-wrap: wrap; }
+  .badge {
+    display: inline-flex; align-items: center; gap: 6px;
+    background: #0d0d0d; border: 1px solid var(--border);
+    border-radius: 3px; padding: 5px 14px; font-size: 0.78rem; color: var(--dim);
+  }
+  .badge span { color: var(--gold); font-weight: 700; }
+
+  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+
+  .reset-btn {
+    background: none; border: 1px solid #333; color: var(--dim);
+    font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; letter-spacing: 0.15em;
+    padding: 8px 20px; cursor: pointer; border-radius: 3px; transition: all 0.2s; margin-top: 12px;
+  }
+  .reset-btn:hover { border-color: var(--pink); color: var(--pink); }
+</style>
+</head>
+<body>
+
+<!-- ═══ LOGIN ═══ -->
+<div id="loginScreen">
+  <div class="login-box">
+    <div class="login-logo">BD STUDIO</div>
+    <div class="login-sub">PAINEL ADMINISTRATIVO</div>
+    <input type="password" id="senhaInput" class="login-input" placeholder="••••••••••"
+      onkeydown="if(event.key==='Enter')login()"/>
+    <button class="login-btn" onclick="login()">ENTRAR</button>
+    <div class="login-error" id="loginError">❌ Senha incorreta</div>
+  </div>
+</div>
+
+<!-- ═══ ADMIN ═══ -->
+<div id="adminPanel">
+  <div class="admin-header">
+    <div class="admin-title">⚙️ BD STUDIO — ADMIN</div>
+    <button class="logout-btn" onclick="logout()">↩ SAIR</button>
+  </div>
+
+  <!-- FORMULÁRIO -->
+  <div class="sec-title">Adicionar novo cordão</div>
+  <div class="card-panel">
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">NÚMERO DO MODELO</label>
+        <input type="number" id="numModelo" class="form-input" placeholder="Ex: 55" min="1" oninput="autoNomeGlb()"/>
+      </div>
+      <div class="form-group">
+        <label class="form-label">NOME DO ARQUIVO .GLB</label>
+        <input type="text" id="nomeGlb" class="form-input" placeholder="Ex: 55.glb"/>
+      </div>
+    </div>
+
+    <!-- UPLOADS -->
+    <div class="uploads-row">
+      <!-- Imagem -->
+      <div>
+        <div class="form-label" style="margin-bottom:8px;">🖼️ IMAGEM DO CORDÃO</div>
+        <div class="upload-box" id="imgBox">
+          <input type="file" id="imgInput" accept="image/*" onchange="handleImg(this)"/>
+          <div class="upload-icon">📷</div>
+          <div class="upload-label">PNG / JPG / WEBP</div>
+          <div class="upload-name" id="imgNome"></div>
+          <img id="imgPreview" class="img-preview" alt="preview"/>
+        </div>
+      </div>
+
+      <!-- GLB -->
+      <div>
+        <div class="form-label" style="margin-bottom:8px;">📦 ARQUIVO .GLB</div>
+        <div class="upload-box" id="glbBox">
+          <input type="file" id="glbInput" accept=".glb,.gltf" onchange="handleGlb(this)"/>
+          <div class="upload-icon" id="glbIcon">📦</div>
+          <div class="upload-label" id="glbLabel">Arquivo 3D .glb</div>
+          <div class="glb-ok" id="glbOk">
+            <div style="color:#4caf50;font-size:1.8rem;">✓</div>
+            <div class="upload-name" id="glbNome"></div>
+            <div class="upload-size" id="glbSize"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PROGRESSO -->
+    <div class="progress-wrap" id="progressWrap">
+      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
+      <div class="progress-msg" id="progressMsg"></div>
+    </div>
+
+    <button class="gen-btn" id="genBtn" onclick="gerar()">✨ GERAR CARD + BAIXAR .GLB</button>
+  </div>
+
+  <!-- RESULTADO -->
+  <div id="resultPanel">
+    <div class="sec-title">Resultado — siga os passos</div>
+    <div class="card-panel">
+
+      <!-- Download GLB -->
+      <div class="glb-download-box" id="glbDownloadBox">
+        <div class="glb-info">
+          <div class="glb-info-title">✅ ARQUIVO .GLB PRONTO PARA DOWNLOAD</div>
+          <div class="glb-info-sub" id="glbDownloadInfo"></div>
+        </div>
+        <button class="glb-dl-btn" id="glbDlBtn" onclick="baixarGlb()">⬇ BAIXAR .GLB</button>
+      </div>
+
+      <ol class="steps">
+        <li>
+          <span class="step-num">1</span>
+          <span>Clique em <strong style="color:#4caf50">BAIXAR .GLB</strong> acima e mova o arquivo para a pasta <code style="color:var(--gold)">cordoes glb\</code> no repositório</span>
+        </li>
+        <li>
+          <span class="step-num">2</span>
+          <span>Abra o <strong style="color:var(--gold)">index.html</strong> no Bloco de Notas</span>
+        </li>
+        <li>
+          <span class="step-num">3</span>
+          <span>Use <strong>Ctrl+F</strong> e busque por <code style="color:var(--gold)" id="lastModelSearch"></code> — cole o código abaixo logo após o fechamento desse card</span>
+        </li>
+        <li>
+          <span class="step-num">4</span>
+          <span>Busque por <code style="color:var(--gold)" id="badgeAtual"></code> e troque para <code style="color:#4caf50" id="badgeNova"></code></span>
+        </li>
+        <li>
+          <span class="step-num">5</span>
+          <span>No terminal: <code style="color:var(--gold)">git add . && git commit -m "adicionar modelo <span id="numStep"></span>" && git push origin main --force</code></span>
+        </li>
+      </ol>
+
+      <div class="info-box">
+        Cole o código abaixo <strong>após o último card</strong> existente, dentro da div <code>&lt;div class="grid"&gt;</code>
+      </div>
+
+      <div class="code-wrap">
+        <button class="copy-btn" id="copyBtn" onclick="copiar()">COPIAR</button>
+        <pre id="codigoGerado"></pre>
+      </div>
+
+      <div class="divider"></div>
+      <div class="badges">
+        <div class="badge">Total atual: <span id="totalAtual"></span> modelos</div>
+        <div class="badge">Novo total: <span id="totalNovo"></span> modelos</div>
+      </div>
+
+      <br>
+      <button class="reset-btn" onclick="resetar()">↺ ADICIONAR OUTRO CORDÃO</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── CONFIGURAÇÃO ──────────────────────────────────────────────────────────────
+var SENHA       = '157Bluecase003*';   // ← troque a senha aqui
+var TOTAL_ATUAL = 54;               // ← atualize quando adicionar modelos
+
+// ─── LOGIN ─────────────────────────────────────────────────────────────────────
+function login() {
+  if (document.getElementById('senhaInput').value === SENHA) {
+    document.getElementById('loginScreen').style.display = 'none';
+    document.getElementById('adminPanel').style.display  = 'block';
+  } else {
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+function logout() {
+  document.getElementById('loginScreen').style.display = 'flex';
+  document.getElementById('adminPanel').style.display  = 'none';
+  document.getElementById('senhaInput').value = '';
+  document.getElementById('loginError').style.display = 'none';
+  resetar();
+}
+
+// ─── AUTO NOME GLB ─────────────────────────────────────────────────────────────
+function autoNomeGlb() {
+  var n = document.getElementById('numModelo').value;
+  if (n && !glbFile) document.getElementById('nomeGlb').value = n + '.glb';
+}
+
+// ─── UPLOAD IMAGEM ─────────────────────────────────────────────────────────────
+var imgBase64 = '';
+function handleImg(input) {
+  var file = input.files[0];
+  if (!file) return;
+  document.getElementById('imgNome').textContent = file.name;
+  var reader = new FileReader();
+  reader.onload = function(e) {
+    imgBase64 = e.target.result;
+    var p = document.getElementById('imgPreview');
+    p.src = imgBase64; p.style.display = 'block';
+    document.getElementById('imgBox').classList.add('done');
+  };
+  reader.readAsDataURL(file);
+}
+
+// ─── UPLOAD GLB ────────────────────────────────────────────────────────────────
+var glbFile = null;
+function handleGlb(input) {
+  var file = input.files[0];
+  if (!file) return;
+  glbFile = file;
+  document.getElementById('glbLabel').style.display = 'none';
+  document.getElementById('glbIcon').style.display  = 'none';
+  var ok = document.getElementById('glbOk');
+  ok.style.display = 'flex';
+  document.getElementById('glbNome').textContent = file.name;
+  document.getElementById('glbSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+  document.getElementById('glbBox').classList.add('done');
+  // Auto preencher nome do glb
+  document.getElementById('nomeGlb').value = file.name;
+  // Auto número
+  var m = file.name.match(/(\d+)/);
+  if (m && !document.getElementById('numModelo').value) {
+    document.getElementById('numModelo').value = m[1];
+  }
+}
+
+// ─── GERAR ─────────────────────────────────────────────────────────────────────
+function gerar() {
+  var num = document.getElementById('numModelo').value.trim();
+  var glb = document.getElementById('nomeGlb').value.trim();
+
+  if (!num) { alert('Informe o número do modelo!'); return; }
+  if (!glb)  { alert('Informe o nome do .glb!'); return; }
+  if (!imgBase64) { alert('Selecione a imagem do cordão!'); return; }
+  if (!glbFile)   { alert('Selecione o arquivo .glb!'); return; }
+
+  // progresso
+  var pw = document.getElementById('progressWrap');
+  var pf = document.getElementById('progressFill');
+  var pm = document.getElementById('progressMsg');
+  pw.style.display = 'block';
+  document.getElementById('genBtn').disabled = true;
+
+  var steps = [
+    [20, 'Processando imagem...'],
+    [50, 'Preparando arquivo .glb...'],
+    [80, 'Gerando código do card...'],
+    [100,'Tudo pronto! ✓']
+  ];
+  var i = 0;
+  function nextStep() {
+    if (i >= steps.length) { finalizarGeracao(num, glb); return; }
+    pf.style.width = steps[i][0] + '%';
+    pm.textContent = steps[i][1];
+    i++; setTimeout(nextStep, 500);
+  }
+  nextStep();
+}
+
+function finalizarGeracao(num, glb) {
+  var numPad = String(num).padStart(2, '0');
+
+  // Ícone SVG 3D
+  var ico = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>';
+
+  var codigo =
+`    <div class="card" data-model="${num}">
+      <div class="card-img-wrap" onclick="open3D(${num})">
+        <img src="${imgBase64}" alt="Cordão Modelo ${num}" loading="lazy"/>
+        <div class="card-badge">#${numPad}</div>
+        <div class="card-overlay">
+          <span class="view3d-hint">${ico} VER EM 3D</span>
+        </div>
+      </div>
+      <div class="card-info">
+          <span class="model-label">MODELO</span>
+          <span class="model-num">${num}</span>
+      </div>
+    </div>`;
+
+  document.getElementById('codigoGerado').textContent = codigo;
+
+  // Preencher instruções
+  var novoTotal = TOTAL_ATUAL + 1;
+  document.getElementById('lastModelSearch').textContent = 'data-model="' + TOTAL_ATUAL + '"';
+  document.getElementById('badgeAtual').textContent = TOTAL_ATUAL + ' MODELOS DISPONÍVEIS';
+  document.getElementById('badgeNova').textContent  = novoTotal  + ' MODELOS DISPONÍVEIS';
+  document.getElementById('numStep').textContent    = num;
+  document.getElementById('totalAtual').textContent = TOTAL_ATUAL;
+  document.getElementById('totalNovo').textContent  = novoTotal;
+
+  // Info do download
+  document.getElementById('glbDownloadInfo').textContent =
+    glbFile.name + ' — ' + (glbFile.size / 1024 / 1024).toFixed(2) + ' MB';
+
+  // Mostrar resultado
+  document.getElementById('progressWrap').style.display = 'none';
+  document.getElementById('resultPanel').style.display  = 'block';
+  document.getElementById('genBtn').disabled = false;
+
+  setTimeout(function() {
+    document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth' });
+  }, 200);
+}
+
+// ─── BAIXAR GLB ────────────────────────────────────────────────────────────────
+function baixarGlb() {
+  if (!glbFile) return;
+  var url = URL.createObjectURL(glbFile);
+  var a = document.createElement('a');
+  a.href = url;
+  a.download = document.getElementById('nomeGlb').value || glbFile.name;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  // Feedback no botão
+  var btn = document.getElementById('glbDlBtn');
+  btn.textContent = '✓ BAIXADO!';
+  btn.style.background = '#388e3c';
+  setTimeout(function() {
+    btn.textContent = '⬇ BAIXAR .GLB';
+    btn.style.background = '';
+  }, 3000);
+}
+
+// ─── COPIAR CÓDIGO ─────────────────────────────────────────────────────────────
+function copiar() {
+  var text = document.getElementById('codigoGerado').textContent;
+  navigator.clipboard.writeText(text).then(function() {
+    var btn = document.getElementById('copyBtn');
+    btn.textContent = '✓ COPIADO';
+    btn.classList.add('ok');
+    setTimeout(function() { btn.textContent = 'COPIAR'; btn.classList.remove('ok'); }, 2000);
+  });
+}
+
+// ─── RESETAR ───────────────────────────────────────────────────────────────────
+function resetar() {
+  imgBase64 = ''; glbFile = null;
+  document.getElementById('numModelo').value  = '';
+  document.getElementById('nomeGlb').value    = '';
+  document.getElementById('imgNome').textContent = '';
+  document.getElementById('imgPreview').style.display = 'none';
+  document.getElementById('imgBox').classList.remove('done');
+  document.getElementById('glbBox').classList.remove('done');
+  document.getElementById('glbOk').style.display   = 'none';
+  document.getElementById('glbIcon').style.display = '';
+  document.getElementById('glbLabel').style.display = '';
+  document.getElementById('glbNome').textContent = '';
+  document.getElementById('glbSize').textContent = '';
+  document.getElementById('resultPanel').style.display   = 'none';
+  document.getElementById('progressWrap').style.display  = 'none';
+  document.getElementById('progressFill').style.width    = '0%';
+  document.getElementById('imgInput').value = '';
+  document.getElementById('glbInput').value = '';
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+</script>
+</body>
+</html>
