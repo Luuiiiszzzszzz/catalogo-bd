@@ -6,516 +6,1128 @@
 <title>BD Studio — Admin</title>
 <style>
   @import url('https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;600;700&display=swap');
-  * { box-sizing: border-box; margin: 0; padding: 0; }
-  :root {
-    --pink: #c23d8e; --pink-dark: #8a1550;
-    --gold: #c9a84c; --bg: #0a0a0a; --bg2: #111;
-    --border: #1e1e1e; --text: #e0e0e0; --dim: #888;
+  *{box-sizing:border-box;margin:0;padding:0}
+  :root{
+    --pink:#c23d8e;--pk:#8a1550;--gold:#c9a84c;
+    --bg:#0a0a0a;--b2:#111;--b3:#0d0d0d;
+    --bd:#1e1e1e;--tx:#e0e0e0;--dm:#888;
+    --gr:#4caf50;--re:#e63946;--bl:#2196f3;
   }
-  body { background: var(--bg); color: var(--text); font-family: 'Rajdhani', sans-serif; min-height: 100vh; }
+  body{background:var(--bg);color:var(--tx);font-family:'Rajdhani',sans-serif;min-height:100vh}
 
   /* ── LOGIN ── */
-  #loginScreen {
-    display: flex; flex-direction: column; align-items: center;
-    justify-content: center; min-height: 100vh; padding: 20px;
-  }
-  .login-box {
-    background: var(--bg2); border: 1px solid #2a2a2a;
-    border-radius: 8px; padding: 40px; width: 100%; max-width: 380px; text-align: center;
-  }
-  .login-logo { font-size: 2.5rem; letter-spacing: 0.3em; color: var(--pink); margin-bottom: 4px; }
-  .login-sub  { font-size: 0.75rem; color: #555; letter-spacing: 0.3em; margin-bottom: 32px; }
-  .login-input {
-    width: 100%; background: #0d0d0d; border: 1px solid #2a2a2a; color: var(--text);
-    font-family: 'Rajdhani', sans-serif; font-size: 1rem; padding: 12px 16px;
-    border-radius: 4px; margin-bottom: 14px; outline: none; letter-spacing: 0.1em; text-align: center;
-  }
-  .login-input:focus { border-color: var(--pink); }
-  .login-btn {
-    width: 100%; background: var(--pink); border: none; color: #fff;
-    font-family: 'Rajdhani', sans-serif; font-size: 1rem; font-weight: 700;
-    letter-spacing: 0.2em; padding: 13px; border-radius: 4px; cursor: pointer; transition: background 0.2s;
-  }
-  .login-btn:hover { background: var(--pink-dark); }
-  .login-error { color: #e63946; font-size: 0.85rem; margin-top: 10px; display: none; }
+  #login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:20px}
+  .lbox{background:var(--b2);border:1px solid #2a2a2a;border-radius:8px;padding:40px;width:100%;max-width:380px;text-align:center}
+  .llogo{font-size:2.4rem;letter-spacing:.3em;color:var(--pink);margin-bottom:4px}
+  .lsub{font-size:.72rem;color:#555;letter-spacing:.3em;margin-bottom:28px}
+  .lin{width:100%;background:var(--b3);border:1px solid #2a2a2a;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:1rem;padding:12px 16px;border-radius:4px;margin-bottom:12px;outline:none;letter-spacing:.15em;text-align:center;transition:border-color .2s}
+  .lin:focus{border-color:var(--pink)}
+  .lbtn{width:100%;background:var(--pink);border:none;color:#fff;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.2em;padding:13px;border-radius:4px;cursor:pointer;transition:background .2s}
+  .lbtn:hover{background:var(--pk)}
+  .lbtn:disabled{background:#333;color:#666;cursor:not-allowed}
+  .lerr{color:var(--re);font-size:.82rem;margin-top:8px;display:none}
+  .lwrn{color:var(--gold);font-size:.8rem;margin-top:6px;display:none}
+  .llck{color:var(--re);font-size:.85rem;margin-top:10px;font-weight:700;display:none}
+  .dots{display:flex;justify-content:center;gap:7px;margin-top:14px}
+  .dot{width:8px;height:8px;border-radius:50%;background:#2a2a2a;transition:background .2s}
+  .dot.on{background:var(--re)}
 
-  /* ── ADMIN ── */
-  #adminPanel { display: none; padding: 28px 20px; max-width: 860px; margin: 0 auto; }
-  .admin-header {
-    display: flex; justify-content: space-between; align-items: center;
-    border-bottom: 1px solid var(--border); padding-bottom: 18px; margin-bottom: 28px;
-  }
-  .admin-title { font-size: 1.4rem; letter-spacing: 0.3em; color: var(--pink); }
-  .logout-btn {
-    background: none; border: 1px solid #333; color: var(--dim);
-    font-family: 'Rajdhani', sans-serif; font-size: 0.8rem; letter-spacing: 0.15em;
-    padding: 6px 16px; cursor: pointer; border-radius: 3px; transition: all 0.2s;
-  }
-  .logout-btn:hover { border-color: #e63946; color: #e63946; }
+  /* ── PAINEL ── */
+  #panel{display:none;padding:22px 18px;max-width:960px;margin:0 auto}
+  .hdr{display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--bd);padding-bottom:16px;margin-bottom:22px;flex-wrap:wrap;gap:10px}
+  .htitle{font-size:1.3rem;letter-spacing:.3em;color:var(--pink)}
+  .hright{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+  .stimer{font-size:.74rem;color:var(--dm);letter-spacing:.1em}
+  .stimer.warn{color:var(--gold)}
+  .obtn{background:none;border:1px solid #333;color:var(--dm);font-family:'Rajdhani',sans-serif;font-size:.78rem;letter-spacing:.15em;padding:6px 14px;cursor:pointer;border-radius:3px;transition:all .2s}
+  .obtn:hover{border-color:var(--re);color:var(--re)}
 
-  .sec-title {
-    font-size: 0.85rem; letter-spacing: 0.25em; color: var(--dim);
-    text-transform: uppercase; margin-bottom: 14px;
-    border-left: 3px solid var(--pink); padding-left: 12px;
-  }
-  .card-panel {
-    background: var(--bg2); border: 1px solid var(--border);
-    border-radius: 6px; padding: 24px; margin-bottom: 24px;
-  }
+  /* ── TABS ── */
+  .tabs{display:flex;gap:3px;margin-bottom:20px;border-bottom:1px solid var(--bd);flex-wrap:wrap}
+  .tab{background:none;border:none;color:var(--dm);font-family:'Rajdhani',sans-serif;font-size:.8rem;font-weight:700;letter-spacing:.18em;padding:10px 16px;cursor:pointer;border-bottom:2px solid transparent;margin-bottom:-1px;transition:all .2s}
+  .tab:hover{color:var(--tx)}
+  .tab.on{color:var(--pink);border-bottom-color:var(--pink)}
+  .tc{display:none}.tc.on{display:block}
 
-  /* ── FORM ── */
-  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 16px; }
-  @media(max-width:560px){ .form-row { grid-template-columns: 1fr; } }
-  .form-group { display: flex; flex-direction: column; gap: 6px; }
-  .form-label { font-size: 0.72rem; letter-spacing: 0.2em; color: var(--dim); }
-  .form-input {
-    background: #0d0d0d; border: 1px solid #2a2a2a; color: var(--text);
-    font-family: 'Rajdhani', sans-serif; font-size: 0.95rem;
-    padding: 10px 14px; border-radius: 4px; outline: none; transition: border-color 0.2s;
-  }
-  .form-input:focus { border-color: var(--pink); }
-  .form-full { grid-column: 1 / -1; }
+  /* ── GERAL ── */
+  .stl{font-size:.78rem;letter-spacing:.25em;color:var(--dm);text-transform:uppercase;margin-bottom:13px;border-left:3px solid var(--pink);padding-left:12px}
+  .cp{background:var(--b2);border:1px solid var(--bd);border-radius:6px;padding:22px;margin-bottom:20px}
+  .row2{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:14px}
+  @media(max-width:540px){.row2{grid-template-columns:1fr}}
+  .fg{display:flex;flex-direction:column;gap:6px}
+  .fl{font-size:.7rem;letter-spacing:.2em;color:var(--dm)}
+  .fi{background:var(--b3);border:1px solid #2a2a2a;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:.95rem;padding:10px 14px;border-radius:4px;outline:none;transition:border-color .2s;width:100%}
+  .fi:focus{border-color:var(--pink)}.fi.err{border-color:var(--re)}.fi.ok{border-color:var(--gr)}
+  .fwarn{font-size:.73rem;color:var(--re);display:none;margin-top:2px}
 
-  /* ── UPLOADS ── */
-  .uploads-row { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; margin-bottom: 20px; }
-  @media(max-width:560px){ .uploads-row { grid-template-columns: 1fr; } }
+  /* ── UPLOAD ── */
+  .urow{display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px}
+  @media(max-width:540px){.urow{grid-template-columns:1fr}}
+  .ubox{border:2px dashed #2a2a2a;border-radius:6px;padding:18px 12px;text-align:center;cursor:pointer;transition:all .25s;position:relative;min-height:115px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:5px}
+  .ubox:hover{border-color:var(--pink);background:rgba(194,61,142,.04)}
+  .ubox.done{border-color:var(--gr);border-style:solid}
+  .ubox input{position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%}
+  .uico{font-size:1.7rem}.ulbl{font-size:.76rem;color:var(--dm);letter-spacing:.08em}
+  .unm{font-size:.78rem;color:var(--pink);word-break:break-all}
+  .usz{font-size:.7rem;color:#555}
+  .iprv{width:100%;height:86px;object-fit:contain;border-radius:4px;margin-top:6px;display:none}
+  .gok{display:none;flex-direction:column;align-items:center;gap:3px}
 
-  .upload-box {
-    border: 2px dashed #2a2a2a; border-radius: 6px; padding: 24px 16px;
-    text-align: center; cursor: pointer; transition: all 0.25s; position: relative; min-height: 130px;
-    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px;
-  }
-  .upload-box:hover { border-color: var(--pink); background: rgba(194,61,142,0.04); }
-  .upload-box.done { border-color: #4caf50; border-style: solid; }
-  .upload-box.done .upload-icon { color: #4caf50; }
-  .upload-box input { position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
-  .upload-icon { font-size: 2rem; }
-  .upload-label { font-size: 0.8rem; color: var(--dim); letter-spacing: 0.1em; }
-  .upload-name { font-size: 0.82rem; color: var(--pink); margin-top: 4px; word-break: break-all; }
-  .upload-size { font-size: 0.72rem; color: #555; }
+  /* ── COMPRESSÃO ── */
+  .comprow{display:flex;align-items:center;gap:10px;margin-bottom:14px;background:var(--b3);border:1px solid var(--bd);border-radius:4px;padding:10px 14px;flex-wrap:wrap}
+  .compl{font-size:.75rem;color:var(--dm);letter-spacing:.1em;flex:1}
+  .compslider{-webkit-appearance:none;width:120px;height:3px;background:linear-gradient(90deg,var(--pink),var(--gold));border-radius:2px;outline:none;cursor:pointer}
+  .compslider::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--pink);border:2px solid #000;cursor:pointer}
+  .compval{font-size:.8rem;color:var(--gold);font-weight:700;min-width:30px}
+  .compinfo{font-size:.72rem;color:var(--dm)}
 
-  .img-preview {
-    width: 100%; height: 100px; object-fit: contain;
-    border-radius: 4px; margin-top: 8px; display: none;
-  }
-  .glb-ok { display: none; flex-direction: column; align-items: center; gap: 4px; }
+  /* ── PREVIEW CARD ── */
+  .prvsec{margin-bottom:16px;display:none}
+  .prvlbl{font-size:.7rem;letter-spacing:.2em;color:var(--dm);margin-bottom:8px}
+  .prvwrap{display:flex;justify-content:center}
+  .cprv{width:154px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;overflow:hidden}
+  .cprv-iw{position:relative;width:100%;padding-top:100%;overflow:hidden}
+  .cprv-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .cprv-bdg{position:absolute;top:6px;right:6px;background:rgba(0,0,0,.8);border:1px solid var(--pink);color:var(--pink);font-size:.62rem;letter-spacing:.1em;padding:2px 6px;border-radius:2px}
+  .cprv-info{display:flex;justify-content:space-between;align-items:center;padding:8px 10px;border-top:1px solid #2a2a2a}
+  .cprv-lbl{font-size:.58rem;letter-spacing:.2em;color:var(--dm)}
+  .cprv-num{font-size:1.1rem;color:var(--pink);font-weight:700}
 
-  /* ── BOTÃO ── */
-  .gen-btn {
-    width: 100%; background: linear-gradient(135deg, var(--pink), var(--pink-dark));
-    border: none; color: #fff; font-family: 'Rajdhani', sans-serif;
-    font-size: 1.05rem; font-weight: 700; letter-spacing: 0.25em;
-    padding: 14px; border-radius: 4px; cursor: pointer; transition: opacity 0.2s;
-    box-shadow: 0 4px 20px rgba(194,61,142,0.35);
-  }
-  .gen-btn:hover { opacity: 0.88; }
-  .gen-btn:disabled { background: #222; color: #555; box-shadow: none; cursor: not-allowed; }
+  /* ── BOTÃO GERAR ── */
+  .gbtn{width:100%;background:linear-gradient(135deg,var(--pink),var(--pk));border:none;color:#fff;font-family:'Rajdhani',sans-serif;font-size:1rem;font-weight:700;letter-spacing:.25em;padding:13px;border-radius:4px;cursor:pointer;transition:opacity .2s;box-shadow:0 4px 18px rgba(194,61,142,.3)}
+  .gbtn:hover{opacity:.88}
+  .gbtn:disabled{background:#222;color:#555;box-shadow:none;cursor:not-allowed}
 
   /* ── PROGRESSO ── */
-  .progress-wrap { margin: 16px 0; display: none; }
-  .progress-bar { height: 3px; background: #1e1e1e; border-radius: 2px; overflow: hidden; }
-  .progress-fill { height: 100%; background: linear-gradient(90deg, var(--pink), var(--pink-dark)); width: 0%; transition: width 0.4s; }
-  .progress-msg { font-size: 0.8rem; color: var(--dim); text-align: center; margin-top: 8px; }
+  .pwrap{margin:14px 0;display:none}
+  .pbar{height:3px;background:#1e1e1e;border-radius:2px;overflow:hidden}
+  .pfill{height:100%;background:linear-gradient(90deg,var(--pink),var(--pk));width:0%;transition:width .4s}
+  .pmsg{font-size:.78rem;color:var(--dm);text-align:center;margin-top:8px}
 
   /* ── RESULTADO ── */
-  #resultPanel { display: none; }
+  #rPanel{display:none}
+  .steps{list-style:none;margin-bottom:16px}
+  .steps li{display:flex;align-items:flex-start;gap:12px;padding:9px 0;border-bottom:1px solid #151515;font-size:.84rem;color:#aaa}
+  .steps li:last-child{border:none}
+  .snum{background:var(--pink);color:#fff;border-radius:50%;width:20px;height:20px;min-width:20px;display:flex;align-items:center;justify-content:center;font-size:.66rem;font-weight:700}
+  code{color:var(--gold);background:var(--b3);padding:1px 6px;border-radius:2px;font-size:.85em}
+  .cwrap{background:var(--b3);border:1px solid var(--bd);border-radius:4px;padding:14px;margin-bottom:12px;position:relative}
+  .cwrap pre{font-family:monospace;font-size:.74rem;color:var(--gold);white-space:pre-wrap;word-break:break-all;max-height:240px;overflow-y:auto}
+  .cpbtn{position:absolute;top:8px;right:8px;background:#1e1e1e;border:1px solid #333;color:var(--dm);font-family:'Rajdhani',sans-serif;font-size:.7rem;letter-spacing:.1em;padding:3px 10px;cursor:pointer;border-radius:3px;transition:all .2s}
+  .cpbtn:hover{border-color:var(--pink);color:var(--pink)}
+  .cpbtn.ok{border-color:var(--gr);color:var(--gr)}
+  .ibox{background:rgba(194,61,142,.05);border:1px solid rgba(194,61,142,.2);border-radius:4px;padding:12px 14px;font-size:.82rem;color:#aaa;line-height:1.7;margin-bottom:12px}
+  .ibox strong{color:var(--pink)}
 
-  .steps { list-style: none; margin-bottom: 20px; }
-  .steps li {
-    display: flex; align-items: flex-start; gap: 12px;
-    padding: 10px 0; border-bottom: 1px solid #151515; font-size: 0.88rem; color: #aaa;
-  }
-  .steps li:last-child { border: none; }
-  .step-num {
-    background: var(--pink); color: #fff; border-radius: 50%;
-    width: 22px; height: 22px; min-width: 22px; display: flex; align-items: center;
-    justify-content: center; font-size: 0.7rem; font-weight: 700;
-  }
+  /* ── BOTÕES DE AÇÃO ── */
+  .actrow{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .abtn{flex:1;min-width:140px;border:none;color:#fff;font-family:'Rajdhani',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.15em;padding:10px 16px;border-radius:4px;cursor:pointer;transition:opacity .2s;display:flex;align-items:center;justify-content:center;gap:6px}
+  .abtn:hover{opacity:.85}
+  .abtn:disabled{background:#333;color:#666;cursor:not-allowed;opacity:1}
+  .abtn.grn{background:var(--gr)}
+  .abtn.gld{background:var(--gold);color:#000}
+  .abtn.blu{background:var(--bl)}
 
-  .code-wrap { background: #0d0d0d; border: 1px solid var(--border); border-radius: 4px; padding: 14px; margin-bottom: 16px; position: relative; }
-  .code-wrap pre { font-family: monospace; font-size: 0.76rem; color: var(--gold); white-space: pre-wrap; word-break: break-all; max-height: 280px; overflow-y: auto; }
-  .copy-btn {
-    position: absolute; top: 10px; right: 10px;
-    background: #1e1e1e; border: 1px solid #333; color: var(--dim);
-    font-family: 'Rajdhani', sans-serif; font-size: 0.72rem; letter-spacing: 0.1em;
-    padding: 3px 12px; cursor: pointer; border-radius: 3px; transition: all 0.2s;
-  }
-  .copy-btn:hover { border-color: var(--pink); color: var(--pink); }
-  .copy-btn.ok { border-color: #4caf50; color: #4caf50; }
+  .badges{display:flex;gap:10px;flex-wrap:wrap;margin-bottom:12px}
+  .badge{display:inline-flex;align-items:center;gap:6px;background:var(--b3);border:1px solid var(--bd);border-radius:3px;padding:5px 12px;font-size:.75rem;color:var(--dm)}
+  .badge span{color:var(--gold);font-weight:700}
+  .rbtn{background:none;border:1px solid #333;color:var(--dm);font-family:'Rajdhani',sans-serif;font-size:.82rem;letter-spacing:.15em;padding:7px 18px;cursor:pointer;border-radius:3px;transition:all .2s}
+  .rbtn:hover{border-color:var(--pink);color:var(--pink)}
+  .divider{height:1px;background:var(--bd);margin:16px 0}
 
-  .info-box {
-    background: rgba(194,61,142,0.05); border: 1px solid rgba(194,61,142,0.2);
-    border-radius: 4px; padding: 14px 16px; font-size: 0.85rem; color: #aaa;
-    line-height: 1.7; margin-bottom: 16px;
-  }
-  .info-box strong { color: var(--pink); }
-  .info-box code { color: var(--gold); background: #0d0d0d; padding: 1px 6px; border-radius: 2px; }
+  /* ── STATS ── */
+  .stats-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:12px;margin-bottom:20px}
+  .stat-card{background:var(--b2);border:1px solid var(--bd);border-radius:6px;padding:16px;text-align:center}
+  .stat-val{font-size:2rem;color:var(--pink);font-weight:700;margin-bottom:4px}
+  .stat-lbl{font-size:.68rem;color:var(--dm);letter-spacing:.15em;text-transform:uppercase}
+  .stat-sub{font-size:.72rem;color:var(--gold);margin-top:2px}
 
-  /* Download GLB */
-  .glb-download-box {
-    background: rgba(76,175,80,0.06); border: 1px solid rgba(76,175,80,0.25);
-    border-radius: 4px; padding: 16px; margin-bottom: 16px;
-    display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap;
-  }
-  .glb-info { display: flex; flex-direction: column; gap: 2px; }
-  .glb-info-title { font-size: 0.8rem; letter-spacing: 0.15em; color: #4caf50; }
-  .glb-info-sub { font-size: 0.82rem; color: var(--dim); }
-  .glb-dl-btn {
-    background: #4caf50; border: none; color: #fff;
-    font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; font-weight: 700;
-    letter-spacing: 0.15em; padding: 8px 20px; border-radius: 4px; cursor: pointer;
-    transition: background 0.2s; white-space: nowrap;
-  }
-  .glb-dl-btn:hover { background: #388e3c; }
+  /* ── TAB EDITAR ── */
+  .editlist{display:flex;flex-direction:column;gap:10px}
+  .edititem{background:var(--b2);border:1px solid var(--bd);border-radius:4px;padding:12px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .einum{font-size:1.3rem;color:var(--pink);font-weight:700;min-width:36px}
+  .eiinfo{flex:1;display:flex;flex-direction:column;gap:2px}
+  .eiglb{font-size:.78rem;color:var(--gold)}
+  .eithumb{width:44px;height:44px;object-fit:cover;border-radius:3px;border:1px solid var(--bd);cursor:pointer}
+  .eithumb:hover{border-color:var(--pink)}
+  .eibtns{display:flex;gap:6px;flex-wrap:wrap}
+  .eibtn{background:none;border:1px solid #2a2a2a;color:var(--dm);font-family:'Rajdhani',sans-serif;font-size:.7rem;letter-spacing:.1em;padding:4px 10px;cursor:pointer;border-radius:3px;transition:all .2s}
+  .eibtn:hover{border-color:var(--pink);color:var(--pink)}
+  .eibtn.del:hover{border-color:var(--re);color:var(--re)}
+  .eibtn.up:hover{border-color:var(--gr);color:var(--gr)}
+  .eibtn.dn:hover{border-color:var(--bl);color:var(--bl)}
+  .search-box{display:flex;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+  .empty{text-align:center;color:var(--dm);padding:40px;font-size:.9rem}
 
-  .badges { display: flex; gap: 10px; flex-wrap: wrap; }
-  .badge {
-    display: inline-flex; align-items: center; gap: 6px;
-    background: #0d0d0d; border: 1px solid var(--border);
-    border-radius: 3px; padding: 5px 14px; font-size: 0.78rem; color: var(--dim);
-  }
-  .badge span { color: var(--gold); font-weight: 700; }
+  /* ── HISTÓRICO ── */
+  .hlist{display:flex;flex-direction:column;gap:10px}
+  .hitem{background:var(--b2);border:1px solid var(--bd);border-radius:4px;padding:12px 14px;display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+  .hnum{font-size:1.3rem;color:var(--pink);font-weight:700;min-width:36px}
+  .hinfo{flex:1;display:flex;flex-direction:column;gap:2px}
+  .hglb{font-size:.78rem;color:var(--gold)}
+  .hdate{font-size:.7rem;color:var(--dm)}
+  .hthumb{width:40px;height:40px;object-fit:cover;border-radius:3px;border:1px solid var(--bd)}
+  .hdel{background:none;border:1px solid #2a2a2a;color:#555;font-family:'Rajdhani',sans-serif;font-size:.7rem;padding:3px 10px;cursor:pointer;border-radius:3px;transition:all .2s}
+  .hdel:hover{border-color:var(--re);color:var(--re)}
+  .hclr{background:none;border:1px solid #333;color:var(--dm);font-family:'Rajdhani',sans-serif;font-size:.78rem;letter-spacing:.15em;padding:5px 14px;cursor:pointer;border-radius:3px;transition:all .2s}
+  .hclr:hover{border-color:var(--re);color:var(--re)}
 
-  .divider { height: 1px; background: var(--border); margin: 20px 0; }
+  /* ── CONFIG ── */
+  .cfgg{margin-bottom:20px}
+  .cfgl{font-size:.7rem;letter-spacing:.2em;color:var(--dm);margin-bottom:8px;display:block}
+  .cfgrow{display:flex;gap:10px;align-items:center}
+  .cfgi{flex:1;background:var(--b3);border:1px solid #2a2a2a;color:var(--tx);font-family:'Rajdhani',sans-serif;font-size:.95rem;padding:10px 14px;border-radius:4px;outline:none;transition:border-color .2s}
+  .cfgi:focus{border-color:var(--pink)}
+  .csbtn{background:var(--pink);border:none;color:#fff;font-family:'Rajdhani',sans-serif;font-size:.82rem;font-weight:700;letter-spacing:.15em;padding:10px 18px;border-radius:4px;cursor:pointer;transition:background .2s;white-space:nowrap}
+  .csbtn:hover{background:var(--pk)}
+  .cmsg{font-size:.76rem;color:var(--gr);margin-top:6px;display:none}
 
-  .reset-btn {
-    background: none; border: 1px solid #333; color: var(--dim);
-    font-family: 'Rajdhani', sans-serif; font-size: 0.85rem; letter-spacing: 0.15em;
-    padding: 8px 20px; cursor: pointer; border-radius: 3px; transition: all 0.2s; margin-top: 12px;
-  }
-  .reset-btn:hover { border-color: var(--pink); color: var(--pink); }
+  /* ── MODAL ── */
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:999;display:none;align-items:center;justify-content:center;padding:20px}
+  .modal.open{display:flex}
+  .mbox{background:var(--b2);border:1px solid var(--bd);border-radius:6px;width:100%;overflow:hidden}
+  .mbox.sm{max-width:500px}
+  .mbox.lg{max-width:900px}
+  .mhdr{display:flex;justify-content:space-between;align-items:center;padding:16px 20px;border-bottom:1px solid var(--bd)}
+  .mtitle{font-size:1rem;letter-spacing:.2em;color:var(--pink)}
+  .mclose{background:none;border:1px solid #333;color:var(--dm);width:28px;height:28px;cursor:pointer;border-radius:3px;font-size:.8rem;display:flex;align-items:center;justify-content:center;transition:all .2s}
+  .mclose:hover{border-color:var(--pink);color:var(--pink)}
+  .mbody{padding:20px;max-height:80vh;overflow-y:auto}
+
+  /* ── PREVIEW FULLSCREEN ── */
+  .pfull-wrap{display:flex;gap:20px;flex-wrap:wrap;align-items:flex-start}
+  .pfull-card{width:220px;background:#1a1a1a;border:1px solid #2a2a2a;border-radius:6px;overflow:hidden;flex-shrink:0}
+  .pfull-iw{position:relative;width:100%;padding-top:100%;overflow:hidden}
+  .pfull-img{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+  .pfull-bdg{position:absolute;top:8px;right:8px;background:rgba(0,0,0,.8);border:1px solid var(--pink);color:var(--pink);font-size:.75rem;letter-spacing:.1em;padding:3px 8px;border-radius:2px}
+  .pfull-info{display:flex;justify-content:space-between;align-items:center;padding:10px 14px;border-top:1px solid #2a2a2a}
+  .pfull-lbl{font-size:.65rem;letter-spacing:.2em;color:var(--dm)}
+  .pfull-num{font-size:1.3rem;color:var(--pink);font-weight:700}
+  .pfull-details{flex:1;display:flex;flex-direction:column;gap:12px}
+  .pfull-detail{background:var(--b3);border:1px solid var(--bd);border-radius:4px;padding:12px 14px}
+  .pfull-dlbl{font-size:.68rem;letter-spacing:.2em;color:var(--dm);margin-bottom:4px}
+  .pfull-dval{font-size:.9rem;color:var(--tx)}
+
+  /* ── BACKUP ── */
+  .bkp-list{display:flex;flex-direction:column;gap:8px;max-height:300px;overflow-y:auto}
+  .bkp-item{background:var(--b3);border:1px solid var(--bd);border-radius:4px;padding:10px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+  .bkp-info{display:flex;flex-direction:column;gap:2px}
+  .bkp-date{font-size:.8rem;color:var(--tx)}
+  .bkp-size{font-size:.7rem;color:var(--dm)}
+  .bkp-restore{background:none;border:1px solid var(--gold);color:var(--gold);font-family:'Rajdhani',sans-serif;font-size:.72rem;padding:4px 12px;cursor:pointer;border-radius:3px;transition:all .2s}
+  .bkp-restore:hover{background:rgba(201,168,76,.1)}
+
+  /* QR CODE */
+  #qrCanvas{border:4px solid #fff;border-radius:4px}
 </style>
 </head>
 <body>
 
-<!-- ═══ LOGIN ═══ -->
-<div id="loginScreen">
-  <div class="login-box">
-    <div class="login-logo">BD STUDIO</div>
-    <div class="login-sub">PAINEL ADMINISTRATIVO</div>
-    <input type="password" id="senhaInput" class="login-input" placeholder="••••••••••"
-      onkeydown="if(event.key==='Enter')login()"/>
-    <button class="login-btn" onclick="login()">ENTRAR</button>
-    <div class="login-error" id="loginError">❌ Senha incorreta</div>
+<!-- LOGIN -->
+<div id="login">
+  <div class="lbox">
+    <div class="llogo">BD STUDIO</div>
+    <div class="lsub">PAINEL ADMINISTRATIVO</div>
+    <input type="password" id="sinput" class="lin" placeholder="••••••••••" onkeydown="if(event.key==='Enter')login()"/>
+    <button class="lbtn" id="lbtn" onclick="login()">ENTRAR</button>
+    <div class="lerr" id="lerr">❌ Senha incorreta</div>
+    <div class="lwrn" id="lwrn"></div>
+    <div class="llck" id="llck"></div>
+    <div class="dots" id="dots">
+      <div class="dot" id="d0"></div><div class="dot" id="d1"></div>
+      <div class="dot" id="d2"></div><div class="dot" id="d3"></div>
+      <div class="dot" id="d4"></div>
+    </div>
   </div>
 </div>
 
-<!-- ═══ ADMIN ═══ -->
-<div id="adminPanel">
-  <div class="admin-header">
-    <div class="admin-title">⚙️ BD STUDIO — ADMIN</div>
-    <button class="logout-btn" onclick="logout()">↩ SAIR</button>
+<!-- PAINEL -->
+<div id="panel">
+  <div class="hdr">
+    <div class="htitle">⚙️ BD STUDIO — ADMIN</div>
+    <div class="hright">
+      <div class="stimer" id="stimer">Sessão: 30:00</div>
+      <button class="obtn" onclick="abrirBkp()">💾 BACKUPS</button>
+      <button class="obtn" onclick="logout()">↩ SAIR</button>
+    </div>
   </div>
 
-  <!-- FORMULÁRIO -->
-  <div class="sec-title">Adicionar novo cordão</div>
-  <div class="card-panel">
-    <div class="form-row">
-      <div class="form-group">
-        <label class="form-label">NÚMERO DO MODELO</label>
-        <input type="number" id="numModelo" class="form-input" placeholder="Ex: 55" min="1" oninput="autoNomeGlb()"/>
-      </div>
-      <div class="form-group">
-        <label class="form-label">NOME DO ARQUIVO .GLB</label>
-        <input type="text" id="nomeGlb" class="form-input" placeholder="Ex: 55.glb"/>
-      </div>
-    </div>
+  <div class="tabs">
+    <button class="tab on"  onclick="stab('tAdd',this)">➕ ADICIONAR</button>
+    <button class="tab"     onclick="stab('tEdit',this)">✏️ EDITAR</button>
+    <button class="tab"     onclick="stab('tStats',this)">📊 STATS</button>
+    <button class="tab"     onclick="stab('tHist',this)">📋 HISTÓRICO</button>
+    <button class="tab"     onclick="stab('tCfg',this)">⚙️ CONFIG</button>
+  </div>
 
-    <!-- UPLOADS -->
-    <div class="uploads-row">
-      <!-- Imagem -->
-      <div>
-        <div class="form-label" style="margin-bottom:8px;">🖼️ IMAGEM DO CORDÃO</div>
-        <div class="upload-box" id="imgBox">
-          <input type="file" id="imgInput" accept="image/*" onchange="handleImg(this)"/>
-          <div class="upload-icon">📷</div>
-          <div class="upload-label">PNG / JPG / WEBP</div>
-          <div class="upload-name" id="imgNome"></div>
-          <img id="imgPreview" class="img-preview" alt="preview"/>
+  <!-- ══ TAB ADICIONAR ══ -->
+  <div class="tc on" id="tAdd">
+    <div class="stl">Novo cordão</div>
+    <div class="cp">
+      <div class="fg" style="margin-bottom:14px">
+        <label class="fl">📄 INDEX.HTML (para exportar atualizado + validação de números)</label>
+        <div class="ubox" id="idxBox" style="min-height:55px;flex-direction:row;justify-content:flex-start;gap:10px;padding:10px 14px">
+          <input type="file" id="idxInput" accept=".html" onchange="handleIdx(this)"/>
+          <span style="font-size:1.2rem">📄</span>
+          <span class="ulbl" id="idxLbl">Arraste o index.html aqui</span>
+          <span class="unm" id="idxNm" style="margin-left:auto"></span>
         </div>
       </div>
 
-      <!-- GLB -->
-      <div>
-        <div class="form-label" style="margin-bottom:8px;">📦 ARQUIVO .GLB</div>
-        <div class="upload-box" id="glbBox">
-          <input type="file" id="glbInput" accept=".glb,.gltf" onchange="handleGlb(this)"/>
-          <div class="upload-icon" id="glbIcon">📦</div>
-          <div class="upload-label" id="glbLabel">Arquivo 3D .glb</div>
-          <div class="glb-ok" id="glbOk">
-            <div style="color:#4caf50;font-size:1.8rem;">✓</div>
-            <div class="upload-name" id="glbNome"></div>
-            <div class="upload-size" id="glbSize"></div>
+      <div class="row2">
+        <div class="fg">
+          <label class="fl">NÚMERO DO MODELO</label>
+          <input type="number" id="numM" class="fi" placeholder="Ex: 55" min="1" oninput="onNum()"/>
+          <div class="fwarn" id="numW"></div>
+        </div>
+        <div class="fg">
+          <label class="fl">NOME DO ARQUIVO .GLB</label>
+          <input type="text" id="nGlb" class="fi" placeholder="Ex: 55.glb"/>
+        </div>
+      </div>
+
+      <!-- COMPRESSÃO -->
+      <div class="comprow">
+        <span class="compl">🗜️ COMPRESSÃO DE IMAGEM</span>
+        <input type="range" id="compSlider" class="compslider" min="20" max="95" value="72" oninput="onComp(this)"/>
+        <span class="compval" id="compVal">72%</span>
+        <span class="compinfo" id="compInfo">—</span>
+      </div>
+
+      <div class="urow">
+        <div>
+          <div class="fl" style="margin-bottom:8px">🖼️ IMAGEM DO CORDÃO</div>
+          <div class="ubox" id="imgBox">
+            <input type="file" id="imgI" accept="image/*" onchange="handleImg(this)"/>
+            <div class="uico">📷</div>
+            <div class="ulbl">PNG / JPG / WEBP</div>
+            <div class="unm" id="imgNm"></div>
+            <img id="iprv" class="iprv" alt=""/>
+          </div>
+        </div>
+        <div>
+          <div class="fl" style="margin-bottom:8px">📦 ARQUIVO .GLB</div>
+          <div class="ubox" id="glbBox">
+            <input type="file" id="glbI" accept=".glb,.gltf" onchange="handleGlb(this)"/>
+            <div class="uico" id="gico">📦</div>
+            <div class="ulbl" id="glbl">Arquivo 3D .glb</div>
+            <div class="gok" id="gok">
+              <div style="color:var(--gr);font-size:1.5rem">✓</div>
+              <div class="unm" id="gNm"></div>
+              <div class="usz" id="gSz"></div>
+            </div>
           </div>
         </div>
       </div>
+
+      <!-- PREVIEW -->
+      <div class="prvsec" id="prvsec">
+        <div class="prvlbl">PREVIEW DO CARD</div>
+        <div class="prvwrap">
+          <div class="cprv">
+            <div class="cprv-iw">
+              <img id="cpImg" class="cprv-img" alt=""/>
+              <div class="cprv-bdg" id="cpBdg">#00</div>
+            </div>
+            <div class="cprv-info">
+              <div class="cprv-lbl">MODELO</div>
+              <div class="cprv-num" id="cpNum">0</div>
+            </div>
+          </div>
+        </div>
+        <div style="text-align:center;margin-top:10px">
+          <button class="eibtn" onclick="abrirFullPreview()">🔍 VER EM TELA CHEIA</button>
+        </div>
+      </div>
+
+      <div class="pwrap" id="pwrap">
+        <div class="pbar"><div class="pfill" id="pfill"></div></div>
+        <div class="pmsg" id="pmsg"></div>
+      </div>
+      <button class="gbtn" id="gbtn" onclick="gerar()">✨ GERAR CARD + BAIXAR .GLB</button>
     </div>
 
-    <!-- PROGRESSO -->
-    <div class="progress-wrap" id="progressWrap">
-      <div class="progress-bar"><div class="progress-fill" id="progressFill"></div></div>
-      <div class="progress-msg" id="progressMsg"></div>
-    </div>
+    <!-- RESULTADO -->
+    <div id="rPanel">
+      <div class="stl">Resultado — siga os passos</div>
+      <div class="cp">
+        <div class="actrow">
+          <button class="abtn grn" onclick="dlGlb()">⬇ BAIXAR .GLB</button>
+          <button class="abtn gld" id="expbtn" onclick="exportarIndex()" disabled>⬇ EXPORTAR INDEX.HTML</button>
+          <button class="abtn blu" onclick="abrirFullPreview()">🔍 PREVIEW FULL</button>
+        </div>
 
-    <button class="gen-btn" id="genBtn" onclick="gerar()">✨ GERAR CARD + BAIXAR .GLB</button>
+        <ol class="steps">
+          <li><span class="snum">1</span><span>Clique em <strong style="color:var(--gr)">BAIXAR .GLB</strong> e mova para a pasta <code>cordoes glb\</code></span></li>
+          <li id="step2a" style="display:none"><span class="snum">2</span><span>Clique em <strong style="color:var(--gold)">EXPORTAR INDEX</strong> — já está atualizado. Substitua na pasta.</span></li>
+          <li id="step2b"><span class="snum">2</span><span>Abra o index.html, busque <code id="lastS"></code> e cole o código abaixo após esse card. Depois troque <code id="badgeA"></code> por <code style="color:var(--gr)" id="badgeN"></code></span></li>
+          <li><span class="snum">3</span><span><code>git add . && git commit -m "modelo <span id="numSt"></span>" && git push origin main --force</code></span></li>
+        </ol>
+
+        <div class="ibox">Cole o código abaixo <strong>após o último card</strong>, dentro da div <code>&lt;div class="grid"&gt;</code></div>
+        <div class="cwrap">
+          <button class="cpbtn" id="cpbtn" onclick="copiar()">COPIAR</button>
+          <pre id="codigo"></pre>
+        </div>
+
+        <div class="badges">
+          <div class="badge">Total atual: <span id="tatual"></span></div>
+          <div class="badge">Novo total: <span id="tnovo"></span></div>
+          <div class="badge">Tamanho img: <span id="imgSzBadge"></span></div>
+          <div class="badge">Redução: <span id="redBadge"></span></div>
+        </div>
+        <div class="divider"></div>
+        <button class="rbtn" onclick="resetar()">↺ ADICIONAR OUTRO</button>
+      </div>
+    </div>
   </div>
 
-  <!-- RESULTADO -->
-  <div id="resultPanel">
-    <div class="sec-title">Resultado — siga os passos</div>
-    <div class="card-panel">
+  <!-- ══ TAB EDITAR ══ -->
+  <div class="tc" id="tEdit">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div class="stl" style="margin:0">Modelos no site</div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="eibtn up" onclick="exportarIndexAtual()" id="expEditBtn" style="display:none">⬇ EXPORTAR INDEX EDITADO</button>
+      </div>
+    </div>
+    <div class="search-box">
+      <input type="number" id="srchNum" class="fi search-inp" style="max-width:220px" placeholder="Buscar por número..." oninput="filtrarModelos()"/>
+    </div>
+    <div id="editContainer"><div class="empty">Carregue o index.html na aba ➕ Adicionar para ver e editar os modelos.</div></div>
+  </div>
 
-      <!-- Download GLB -->
-      <div class="glb-download-box" id="glbDownloadBox">
-        <div class="glb-info">
-          <div class="glb-info-title">✅ ARQUIVO .GLB PRONTO PARA DOWNLOAD</div>
-          <div class="glb-info-sub" id="glbDownloadInfo"></div>
+  <!-- ══ TAB STATS ══ -->
+  <div class="tc" id="tStats">
+    <div class="stl">Estatísticas</div>
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat-card"><div class="stat-val" id="stTotal">—</div><div class="stat-lbl">Total de modelos</div></div>
+      <div class="stat-card"><div class="stat-val" id="stIdx">—</div><div class="stat-lbl">Tamanho index.html</div><div class="stat-sub" id="stIdxSub"></div></div>
+      <div class="stat-card"><div class="stat-val" id="stUlt">—</div><div class="stat-lbl">Último adicionado</div><div class="stat-sub" id="stUltSub"></div></div>
+      <div class="stat-card"><div class="stat-val" id="stSes">—</div><div class="stat-lbl">Sessões abertas</div></div>
+    </div>
+    <div class="stl">Modelos por tamanho de imagem</div>
+    <div id="statsDetalhes"><div class="empty">Carregue o index.html para ver estatísticas detalhadas.</div></div>
+  </div>
+
+  <!-- ══ TAB HISTÓRICO ══ -->
+  <div class="tc" id="tHist">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:14px;flex-wrap:wrap;gap:8px">
+      <div class="stl" style="margin:0">Cordões adicionados</div>
+      <button class="hclr" onclick="limparHist()">🗑 LIMPAR TUDO</button>
+    </div>
+    <div id="histC"></div>
+  </div>
+
+  <!-- ══ TAB CONFIG ══ -->
+  <div class="tc" id="tCfg">
+    <div class="stl">Configurações</div>
+    <div class="cp">
+      <div class="cfgg">
+        <label class="cfgl">SENHA DE ACESSO</label>
+        <div class="cfgrow">
+          <input type="password" id="nSenha" class="cfgi" placeholder="Nova senha (mín. 6 chars)"/>
+          <button class="csbtn" onclick="salSenha()">SALVAR</button>
         </div>
-        <button class="glb-dl-btn" id="glbDlBtn" onclick="baixarGlb()">⬇ BAIXAR .GLB</button>
+        <div class="cmsg" id="smsg">✓ Senha atualizada!</div>
       </div>
-
-      <ol class="steps">
-        <li>
-          <span class="step-num">1</span>
-          <span>Clique em <strong style="color:#4caf50">BAIXAR .GLB</strong> acima e mova o arquivo para a pasta <code style="color:var(--gold)">cordoes glb\</code> no repositório</span>
-        </li>
-        <li>
-          <span class="step-num">2</span>
-          <span>Abra o <strong style="color:var(--gold)">index.html</strong> no Bloco de Notas</span>
-        </li>
-        <li>
-          <span class="step-num">3</span>
-          <span>Use <strong>Ctrl+F</strong> e busque por <code style="color:var(--gold)" id="lastModelSearch"></code> — cole o código abaixo logo após o fechamento desse card</span>
-        </li>
-        <li>
-          <span class="step-num">4</span>
-          <span>Busque por <code style="color:var(--gold)" id="badgeAtual"></code> e troque para <code style="color:#4caf50" id="badgeNova"></code></span>
-        </li>
-        <li>
-          <span class="step-num">5</span>
-          <span>No terminal: <code style="color:var(--gold)">git add . && git commit -m "adicionar modelo <span id="numStep"></span>" && git push origin main --force</code></span>
-        </li>
-      </ol>
-
-      <div class="info-box">
-        Cole o código abaixo <strong>após o último card</strong> existente, dentro da div <code>&lt;div class="grid"&gt;</code>
-      </div>
-
-      <div class="code-wrap">
-        <button class="copy-btn" id="copyBtn" onclick="copiar()">COPIAR</button>
-        <pre id="codigoGerado"></pre>
-      </div>
-
       <div class="divider"></div>
-      <div class="badges">
-        <div class="badge">Total atual: <span id="totalAtual"></span> modelos</div>
-        <div class="badge">Novo total: <span id="totalNovo"></span> modelos</div>
+      <div class="cfgg">
+        <label class="cfgl">TOTAL DE MODELOS NO SITE</label>
+        <div class="cfgrow">
+          <input type="number" id="totCfg" class="cfgi" placeholder="Ex: 54" min="1"/>
+          <button class="csbtn" onclick="salTotal()">SALVAR</button>
+        </div>
+        <div class="cmsg" id="tmsg">✓ Total atualizado!</div>
       </div>
+      <div class="divider"></div>
+      <div class="cfgg">
+        <label class="cfgl">TEMPO DE SESSÃO (MINUTOS)</label>
+        <div class="cfgrow">
+          <input type="number" id="tSes" class="cfgi" placeholder="Ex: 30" min="5" max="120"/>
+          <button class="csbtn" onclick="salTempo()">SALVAR</button>
+        </div>
+        <div class="cmsg" id="semsg">✓ Tempo atualizado!</div>
+      </div>
+      <div class="divider"></div>
+      <div class="cfgg">
+        <label class="cfgl">URL DO CATÁLOGO (para QR Code)</label>
+        <div class="cfgrow">
+          <input type="text" id="urlCat" class="cfgi" placeholder="https://luuiiiszzzszzz.github.io/catalogo-bd"/>
+          <button class="csbtn" onclick="gerarQR()">QR CODE</button>
+        </div>
+        <div id="qrWrap" style="margin-top:12px;display:none;text-align:center">
+          <canvas id="qrCanvas" width="200" height="200"></canvas>
+          <div style="margin-top:8px"><button class="eibtn" onclick="dlQR()">⬇ BAIXAR QR CODE</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
 
-      <br>
-      <button class="reset-btn" onclick="resetar()">↺ ADICIONAR OUTRO CORDÃO</button>
+<!-- MODAL EDITAR -->
+<div class="modal" id="editModal">
+  <div class="mbox sm">
+    <div class="mhdr">
+      <div class="mtitle">✏️ EDITAR MODELO <span id="mNum"></span></div>
+      <button class="mclose" onclick="fecharModal('editModal')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="fg" style="margin-bottom:14px">
+        <label class="fl">NOVA IMAGEM (deixe vazio para manter)</label>
+        <div class="ubox" id="mImgBox">
+          <input type="file" id="mImgI" accept="image/*" onchange="handleMImg(this)"/>
+          <div class="uico">📷</div><div class="ulbl">PNG / JPG / WEBP</div>
+          <div class="unm" id="mImgNm"></div>
+          <img id="mImgPrv" class="iprv" alt=""/>
+        </div>
+      </div>
+      <div class="fg" style="margin-bottom:16px">
+        <label class="fl">NOME DO .GLB</label>
+        <input type="text" id="mGlb" class="fi" placeholder="Ex: 1.glb"/>
+      </div>
+      <button class="gbtn" onclick="salvarEdit()">💾 SALVAR ALTERAÇÕES</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PREVIEW FULL -->
+<div class="modal" id="previewModal">
+  <div class="mbox lg">
+    <div class="mhdr">
+      <div class="mtitle">🔍 PREVIEW DO CARD</div>
+      <button class="mclose" onclick="fecharModal('previewModal')">✕</button>
+    </div>
+    <div class="mbody">
+      <div class="pfull-wrap">
+        <div class="pfull-card">
+          <div class="pfull-iw">
+            <img id="pfImg" class="pfull-img" alt=""/>
+            <div class="pfull-bdg" id="pfBdg">#00</div>
+          </div>
+          <div class="pfull-info">
+            <div class="pfull-lbl">MODELO</div>
+            <div class="pfull-num" id="pfNum">0</div>
+          </div>
+        </div>
+        <div class="pfull-details">
+          <div class="pfull-detail"><div class="pfull-dlbl">NÚMERO</div><div class="pfull-dval" id="pfDNum">—</div></div>
+          <div class="pfull-detail"><div class="pfull-dlbl">ARQUIVO .GLB</div><div class="pfull-dval" id="pfDGlb">—</div></div>
+          <div class="pfull-detail"><div class="pfull-dlbl">TAMANHO DA IMAGEM</div><div class="pfull-dval" id="pfDSz">—</div></div>
+          <div class="pfull-detail"><div class="pfull-dlbl">QUALIDADE APLICADA</div><div class="pfull-dval" id="pfDQ">—</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL BACKUPS -->
+<div class="modal" id="bkpModal">
+  <div class="mbox sm">
+    <div class="mhdr">
+      <div class="mtitle">💾 BACKUPS DO INDEX</div>
+      <button class="mclose" onclick="fecharModal('bkpModal')">✕</button>
+    </div>
+    <div class="mbody">
+      <div style="margin-bottom:12px;font-size:.82rem;color:var(--dm)">Backups são criados automaticamente antes de cada exportação. Máximo 5 backups.</div>
+      <div class="bkp-list" id="bkpList"></div>
+      <div class="empty" id="bkpEmpty" style="display:none">Nenhum backup ainda.</div>
     </div>
   </div>
 </div>
 
 <script>
-// ─── CONFIGURAÇÃO ──────────────────────────────────────────────────────────────
-var SENHA       = '157Bluecase003*';   // ← troque a senha aqui
-var TOTAL_ATUAL = 54;               // ← atualize quando adicionar modelos
+// ══════════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════════
+var C={
+  senha:  localStorage.getItem('bd_s')  ||'bdstudio2025',
+  total:  parseInt(localStorage.getItem('bd_t')) ||54,
+  sesMin: parseInt(localStorage.getItem('bd_m')) ||30,
+  url:    localStorage.getItem('bd_url')||'https://luuiiiszzzszzz.github.io/catalogo-bd',
+};
+function savC(){localStorage.setItem('bd_s',C.senha);localStorage.setItem('bd_t',C.total);localStorage.setItem('bd_m',C.sesMin);localStorage.setItem('bd_url',C.url);}
 
-// ─── LOGIN ─────────────────────────────────────────────────────────────────────
-function login() {
-  if (document.getElementById('senhaInput').value === SENHA) {
-    document.getElementById('loginScreen').style.display = 'none';
-    document.getElementById('adminPanel').style.display  = 'block';
+// ══════════════════════════════════════════════════════════
+// LOGIN
+// ══════════════════════════════════════════════════════════
+var MAX=5,tent=0,bloqAte=parseInt(localStorage.getItem('bd_bloq'))||0;
+function login(){
+  var now=Date.now();
+  if(now<bloqAte){mostrarBloq(bloqAte);return;}
+  if(document.getElementById('sinput').value===C.senha){
+    tent=0;localStorage.removeItem('bd_bloq');updDots();abrirPanel();
   } else {
-    document.getElementById('loginError').style.display = 'block';
+    tent++;updDots();
+    document.getElementById('lerr').style.display='block';
+    var r=MAX-tent;
+    if(r>0&&r<=2){var w=document.getElementById('lwrn');w.textContent='⚠️ Mais '+r+' tentativa(s)';w.style.display='block';}
+    if(tent>=MAX){var ba=Date.now()+5*60*1000;localStorage.setItem('bd_bloq',ba);bloqAte=ba;mostrarBloq(ba);}
   }
 }
-function logout() {
-  document.getElementById('loginScreen').style.display = 'flex';
-  document.getElementById('adminPanel').style.display  = 'none';
-  document.getElementById('senhaInput').value = '';
-  document.getElementById('loginError').style.display = 'none';
-  resetar();
+function mostrarBloq(ate){
+  document.getElementById('lerr').style.display='none';
+  document.getElementById('lwrn').style.display='none';
+  var lk=document.getElementById('llck');lk.style.display='block';
+  document.getElementById('lbtn').disabled=true;
+  var iv=setInterval(function(){
+    var r=ate-Date.now();
+    if(r<=0){clearInterval(iv);lk.style.display='none';document.getElementById('lbtn').disabled=false;tent=0;updDots();localStorage.removeItem('bd_bloq');bloqAte=0;return;}
+    lk.textContent='🔒 Bloqueado por '+Math.ceil(r/60000)+' min';
+  },1000);
+}
+function updDots(){for(var i=0;i<5;i++)document.getElementById('d'+i).classList.toggle('on',i<tent);}
+if(Date.now()<bloqAte)mostrarBloq(bloqAte);
+
+// ══════════════════════════════════════════════════════════
+// SESSÃO
+// ══════════════════════════════════════════════════════════
+var sesIv=null,sesR=0,sesCount=parseInt(localStorage.getItem('bd_sc'))||0;
+function abrirPanel(){
+  document.getElementById('login').style.display='none';
+  document.getElementById('panel').style.display='block';
+  document.getElementById('sinput').value='';
+  document.getElementById('lerr').style.display='none';
+  document.getElementById('lwrn').style.display='none';
+  document.getElementById('totCfg').value=C.total;
+  document.getElementById('tSes').value=C.sesMin;
+  document.getElementById('urlCat').value=C.url;
+  sesCount++;localStorage.setItem('bd_sc',sesCount);
+  iniciaSes();renderHist();updStats();
+}
+function iniciaSes(){
+  sesR=C.sesMin*60;if(sesIv)clearInterval(sesIv);
+  sesIv=setInterval(function(){sesR--;updTimer();if(sesR<=0){clearInterval(sesIv);logout();}},1000);
+  updTimer();
+}
+function updTimer(){
+  var m=Math.floor(sesR/60),s=sesR%60,el=document.getElementById('stimer');
+  el.textContent='Sessão: '+String(m).padStart(2,'0')+':'+String(s).padStart(2,'0');
+  el.className='stimer'+(sesR<=120?' warn':'');
+}
+function logout(){if(sesIv)clearInterval(sesIv);document.getElementById('login').style.display='flex';document.getElementById('panel').style.display='none';resetar();}
+
+// ══════════════════════════════════════════════════════════
+// TABS
+// ══════════════════════════════════════════════════════════
+function stab(id,btn){
+  document.querySelectorAll('.tc').forEach(function(t){t.classList.remove('on');});
+  document.querySelectorAll('.tab').forEach(function(t){t.classList.remove('on');});
+  document.getElementById(id).classList.add('on');btn.classList.add('on');
+  if(id==='tHist')renderHist();
+  if(id==='tEdit')renderEdit();
+  if(id==='tStats')updStats();
+}
+function fecharModal(id){document.getElementById(id).classList.remove('open');}
+
+// ══════════════════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════════════════
+var imgB64='',imgOrigSz=0,imgCompSz=0,glbFile=null,idxContent='',idxAtualizado='',modelos=[];
+var editIdx=-1,mImgB64='',qualidade=0.72;
+
+// ══════════════════════════════════════════════════════════
+// COMPRESSÃO
+// ══════════════════════════════════════════════════════════
+function onComp(el){
+  qualidade=parseInt(el.value)/100;
+  document.getElementById('compVal').textContent=el.value+'%';
+  if(imgB64)comprimirImg(imgB64,null);
 }
 
-// ─── AUTO NOME GLB ─────────────────────────────────────────────────────────────
-function autoNomeGlb() {
-  var n = document.getElementById('numModelo').value;
-  if (n && !glbFile) document.getElementById('nomeGlb').value = n + '.glb';
-}
-
-// ─── UPLOAD IMAGEM ─────────────────────────────────────────────────────────────
-var imgBase64 = '';
-function handleImg(input) {
-  var file = input.files[0];
-  if (!file) return;
-  document.getElementById('imgNome').textContent = file.name;
-  var reader = new FileReader();
-  reader.onload = function(e) {
-    imgBase64 = e.target.result;
-    var p = document.getElementById('imgPreview');
-    p.src = imgBase64; p.style.display = 'block';
-    document.getElementById('imgBox').classList.add('done');
+function comprimirImg(src,cb){
+  var img=new Image();
+  img.onload=function(){
+    var canvas=document.createElement('canvas');
+    var max=800;
+    var w=img.width,h=img.height;
+    if(w>max||h>max){if(w>h){h=Math.round(h*max/w);w=max;}else{w=Math.round(w*max/h);h=max;}}
+    canvas.width=w;canvas.height=h;
+    var ctx=canvas.getContext('2d');
+    ctx.drawImage(img,0,0,w,h);
+    var result=canvas.toDataURL('image/jpeg',qualidade);
+    imgCompSz=Math.round(result.length*3/4/1024);
+    var orig=Math.round(imgOrigSz/1024);
+    var red=orig>0?Math.round((1-imgCompSz/orig)*100):0;
+    document.getElementById('compInfo').textContent='Original: '+orig+'KB → '+imgCompSz+'KB (−'+red+'%)';
+    if(cb)cb(result);
+    else{
+      imgB64=result;
+      updPrv();
+    }
   };
-  reader.readAsDataURL(file);
+  img.src=src;
 }
 
-// ─── UPLOAD GLB ────────────────────────────────────────────────────────────────
-var glbFile = null;
-function handleGlb(input) {
-  var file = input.files[0];
-  if (!file) return;
-  glbFile = file;
-  document.getElementById('glbLabel').style.display = 'none';
-  document.getElementById('glbIcon').style.display  = 'none';
-  var ok = document.getElementById('glbOk');
-  ok.style.display = 'flex';
-  document.getElementById('glbNome').textContent = file.name;
-  document.getElementById('glbSize').textContent = (file.size / 1024 / 1024).toFixed(2) + ' MB';
+// ══════════════════════════════════════════════════════════
+// UPLOAD INDEX
+// ══════════════════════════════════════════════════════════
+function handleIdx(inp){
+  var f=inp.files[0];if(!f)return;
+  document.getElementById('idxNm').textContent=f.name;
+  document.getElementById('idxBox').classList.add('done');
+  var r=new FileReader();
+  r.onload=function(e){
+    idxContent=e.target.result;
+    parsearModelos();
+    document.getElementById('expbtn').disabled=false;
+    updStats();
+  };
+  r.readAsText(f,'utf-8');
+}
+
+function parsearModelos(){
+  modelos=[];
+  var re=/<div class="card" data-model="(\d+)"[\s\S]*?<img src="(data:[^"]+)"[\s\S]*?class="card-badge">#(\d+)<\/div>[\s\S]*?class="model-num">(\d+)<\/span>/g;
+  var m;
+  while((m=re.exec(idxContent))!==null){
+    modelos.push({num:parseInt(m[1]),thumb:m[2],glb:m[1]+'.glb'});
+  }
+  modelos.sort(function(a,b){return a.num-b.num;});
+}
+
+// ══════════════════════════════════════════════════════════
+// UPLOAD IMG / GLB
+// ══════════════════════════════════════════════════════════
+function handleImg(inp){
+  var f=inp.files[0];if(!f)return;
+  imgOrigSz=f.size;
+  document.getElementById('imgNm').textContent=f.name;
+  var r=new FileReader();
+  r.onload=function(e){
+    comprimirImg(e.target.result,function(compressed){
+      imgB64=compressed;
+      var p=document.getElementById('iprv');p.src=imgB64;p.style.display='block';
+      document.getElementById('imgBox').classList.add('done');
+      updPrv();
+    });
+  };
+  r.readAsDataURL(f);
+}
+
+function handleGlb(inp){
+  var f=inp.files[0];if(!f)return;
+  glbFile=f;
+  document.getElementById('glbl').style.display='none';
+  document.getElementById('gico').style.display='none';
+  var ok=document.getElementById('gok');ok.style.display='flex';
+  document.getElementById('gNm').textContent=f.name;
+  document.getElementById('gSz').textContent=(f.size/1024/1024).toFixed(2)+' MB';
   document.getElementById('glbBox').classList.add('done');
-  // Auto preencher nome do glb
-  document.getElementById('nomeGlb').value = file.name;
-  // Auto número
-  var m = file.name.match(/(\d+)/);
-  if (m && !document.getElementById('numModelo').value) {
-    document.getElementById('numModelo').value = m[1];
-  }
+  document.getElementById('nGlb').value=f.name;
+  var m=f.name.match(/(\d+)/);
+  if(m&&!document.getElementById('numM').value){document.getElementById('numM').value=m[1];onNum();}
 }
 
-// ─── GERAR ─────────────────────────────────────────────────────────────────────
-function gerar() {
-  var num = document.getElementById('numModelo').value.trim();
-  var glb = document.getElementById('nomeGlb').value.trim();
-
-  if (!num) { alert('Informe o número do modelo!'); return; }
-  if (!glb)  { alert('Informe o nome do .glb!'); return; }
-  if (!imgBase64) { alert('Selecione a imagem do cordão!'); return; }
-  if (!glbFile)   { alert('Selecione o arquivo .glb!'); return; }
-
-  // progresso
-  var pw = document.getElementById('progressWrap');
-  var pf = document.getElementById('progressFill');
-  var pm = document.getElementById('progressMsg');
-  pw.style.display = 'block';
-  document.getElementById('genBtn').disabled = true;
-
-  var steps = [
-    [20, 'Processando imagem...'],
-    [50, 'Preparando arquivo .glb...'],
-    [80, 'Gerando código do card...'],
-    [100,'Tudo pronto! ✓']
-  ];
-  var i = 0;
-  function nextStep() {
-    if (i >= steps.length) { finalizarGeracao(num, glb); return; }
-    pf.style.width = steps[i][0] + '%';
-    pm.textContent = steps[i][1];
-    i++; setTimeout(nextStep, 500);
-  }
-  nextStep();
+function onNum(){
+  var n=document.getElementById('numM').value;
+  var w=document.getElementById('numW'),fi=document.getElementById('numM');
+  if(!n){w.style.display='none';fi.className='fi';return;}
+  if(!glbFile)document.getElementById('nGlb').value=n+'.glb';
+  // Verificar no index carregado
+  var exIdx=modelos.some(function(m){return m.num==n;});
+  var exHist=getHist().some(function(i){return i.num==n;});
+  if(exIdx){w.textContent='⚠️ Modelo '+n+' já existe no site!';w.style.display='block';fi.className='fi err';}
+  else if(exHist){w.textContent='⚠️ Modelo '+n+' já foi adicionado antes (histórico)';w.style.display='block';fi.className='fi err';}
+  else{w.style.display='none';fi.className='fi ok';}
+  updPrv();
 }
 
-function finalizarGeracao(num, glb) {
-  var numPad = String(num).padStart(2, '0');
-
-  // Ícone SVG 3D
-  var ico = '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>';
-
-  var codigo =
-`    <div class="card" data-model="${num}">
-      <div class="card-img-wrap" onclick="open3D(${num})">
-        <img src="${imgBase64}" alt="Cordão Modelo ${num}" loading="lazy"/>
-        <div class="card-badge">#${numPad}</div>
-        <div class="card-overlay">
-          <span class="view3d-hint">${ico} VER EM 3D</span>
-        </div>
-      </div>
-      <div class="card-info">
-          <span class="model-label">MODELO</span>
-          <span class="model-num">${num}</span>
-      </div>
-    </div>`;
-
-  document.getElementById('codigoGerado').textContent = codigo;
-
-  // Preencher instruções
-  var novoTotal = TOTAL_ATUAL + 1;
-  document.getElementById('lastModelSearch').textContent = 'data-model="' + TOTAL_ATUAL + '"';
-  document.getElementById('badgeAtual').textContent = TOTAL_ATUAL + ' MODELOS DISPONÍVEIS';
-  document.getElementById('badgeNova').textContent  = novoTotal  + ' MODELOS DISPONÍVEIS';
-  document.getElementById('numStep').textContent    = num;
-  document.getElementById('totalAtual').textContent = TOTAL_ATUAL;
-  document.getElementById('totalNovo').textContent  = novoTotal;
-
-  // Info do download
-  document.getElementById('glbDownloadInfo').textContent =
-    glbFile.name + ' — ' + (glbFile.size / 1024 / 1024).toFixed(2) + ' MB';
-
-  // Mostrar resultado
-  document.getElementById('progressWrap').style.display = 'none';
-  document.getElementById('resultPanel').style.display  = 'block';
-  document.getElementById('genBtn').disabled = false;
-
-  setTimeout(function() {
-    document.getElementById('resultPanel').scrollIntoView({ behavior: 'smooth' });
-  }, 200);
+function updPrv(){
+  var n=document.getElementById('numM').value;
+  if(!imgB64||!n)return;
+  document.getElementById('prvsec').style.display='block';
+  document.getElementById('cpImg').src=imgB64;
+  document.getElementById('cpNum').textContent=n;
+  document.getElementById('cpBdg').textContent='#'+String(n).padStart(2,'0');
 }
 
-// ─── BAIXAR GLB ────────────────────────────────────────────────────────────────
-function baixarGlb() {
-  if (!glbFile) return;
-  var url = URL.createObjectURL(glbFile);
-  var a = document.createElement('a');
-  a.href = url;
-  a.download = document.getElementById('nomeGlb').value || glbFile.name;
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
+// ══════════════════════════════════════════════════════════
+// GERAR
+// ══════════════════════════════════════════════════════════
+function gerar(){
+  var n=document.getElementById('numM').value.trim();
+  var g=document.getElementById('nGlb').value.trim();
+  if(!n||!g||!imgB64||!glbFile){alert('Preencha todos os campos!');return;}
+  var pw=document.getElementById('pwrap'),pf=document.getElementById('pfill'),pm=document.getElementById('pmsg');
+  pw.style.display='block';document.getElementById('gbtn').disabled=true;
+  var steps=[[20,'Comprimindo imagem...'],[55,'Preparando .glb...'],[85,'Gerando código...'],[100,'Pronto! ✓']];
+  var i=0;
+  function next(){if(i>=steps.length){finalizar(n,g);return;}pf.style.width=steps[i][0]+'%';pm.textContent=steps[i][1];i++;setTimeout(next,420);}
+  next();
+}
+
+function finalizar(n,g){
+  var np=String(n).padStart(2,'0');
+  var ico='<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2L2 7l10 5 10-5-10-5z"/><path d="M2 17l10 5 10-5"/><path d="M2 12l10 5 10-5"/></svg>';
+  var cod='    <div class="card" data-model="'+n+'">\n      <div class="card-img-wrap" onclick="open3D('+n+')">\n        <img src="'+imgB64+'" alt="Cordão Modelo '+n+'" loading="lazy"/>\n        <div class="card-badge">#'+np+'</div>\n        <div class="card-overlay">\n          <span class="view3d-hint">'+ico+' VER EM 3D</span>\n        </div>\n      </div>\n      <div class="card-info">\n          <span class="model-label">MODELO</span>\n          <span class="model-num">'+n+'</span>\n      </div>\n    </div>';
+  document.getElementById('codigo').textContent=cod;
+  var nt=C.total+1;
+  document.getElementById('lastS').textContent='data-model="'+C.total+'"';
+  document.getElementById('badgeA').textContent=C.total+' MODELOS DISPONÍVEIS';
+  document.getElementById('badgeN').textContent=nt+' MODELOS DISPONÍVEIS';
+  document.getElementById('numSt').textContent=n;
+  document.getElementById('tatual').textContent=C.total;
+  document.getElementById('tnovo').textContent=nt;
+  var orig=Math.round(imgOrigSz/1024);
+  var red=orig>0?Math.round((1-imgCompSz/orig)*100):0;
+  document.getElementById('imgSzBadge').textContent=imgCompSz+'KB';
+  document.getElementById('redBadge').textContent=red>0?'−'+red+'%':'0%';
+  var hasIdx=!!idxContent;
+  document.getElementById('step2a').style.display=hasIdx?'flex':'none';
+  document.getElementById('step2b').style.display=hasIdx?'none':'flex';
+  if(hasIdx){inserirCardNoIndex(cod,n,nt);}
+  document.getElementById('pwrap').style.display='none';
+  document.getElementById('rPanel').style.display='block';
+  document.getElementById('gbtn').disabled=false;
+  adicionarHist(n,g,imgB64);
+  setTimeout(function(){document.getElementById('rPanel').scrollIntoView({behavior:'smooth'});},200);
+}
+
+// ══════════════════════════════════════════════════════════
+// INDEX — INSERIR / EXPORTAR / BACKUP
+// ══════════════════════════════════════════════════════════
+function inserirCardNoIndex(cod,n,nt){
+  var idx=idxContent;
+  // Inserir antes do fechamento do grid
+  var gridEnd=idx.lastIndexOf('</div>\n\n<footer>');
+  if(gridEnd===-1)gridEnd=idx.lastIndexOf('</div>\n<footer>');
+  if(gridEnd===-1)gridEnd=idx.lastIndexOf('</div>',idx.indexOf('<footer>'));
+  if(gridEnd!==-1){idx=idx.substring(0,gridEnd)+cod+'\n'+idx.substring(gridEnd);}
+  // Atualizar badge
+  idx=idx.replace(C.total+' MODELOS DISPONÍVEIS',nt+' MODELOS DISPONÍVEIS');
+  idxAtualizado=idx;
+}
+
+function exportarIndex(){
+  if(!idxAtualizado){alert('Gere um card primeiro!');return;}
+  salvarBackup(idxContent);
+  _dlBlob(idxAtualizado,'index.html','text/html');
+  var btn=document.getElementById('expbtn');
+  btn.textContent='✓ EXPORTADO!';btn.style.background='#388e3c';
+  setTimeout(function(){btn.textContent='⬇ EXPORTAR INDEX.HTML';btn.style.background='';},3000);
+}
+
+function exportarIndexAtual(){
+  if(!idxContent){alert('Carregue o index.html primeiro!');return;}
+  salvarBackup(idxContent);
+  _dlBlob(idxAtualizado||idxContent,'index.html','text/html');
+}
+
+function _dlBlob(content,name,type){
+  var blob=new Blob([content],{type:type+';charset=utf-8'});
+  var url=URL.createObjectURL(blob);
+  var a=document.createElement('a');a.href=url;a.download=name;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);
   URL.revokeObjectURL(url);
-
-  // Feedback no botão
-  var btn = document.getElementById('glbDlBtn');
-  btn.textContent = '✓ BAIXADO!';
-  btn.style.background = '#388e3c';
-  setTimeout(function() {
-    btn.textContent = '⬇ BAIXAR .GLB';
-    btn.style.background = '';
-  }, 3000);
 }
 
-// ─── COPIAR CÓDIGO ─────────────────────────────────────────────────────────────
-function copiar() {
-  var text = document.getElementById('codigoGerado').textContent;
-  navigator.clipboard.writeText(text).then(function() {
-    var btn = document.getElementById('copyBtn');
-    btn.textContent = '✓ COPIADO';
-    btn.classList.add('ok');
-    setTimeout(function() { btn.textContent = 'COPIAR'; btn.classList.remove('ok'); }, 2000);
+// ══════════════════════════════════════════════════════════
+// BACKUP
+// ══════════════════════════════════════════════════════════
+function getBkps(){try{return JSON.parse(localStorage.getItem('bd_bkp')||'[]');}catch(e){return[];}}
+function salvarBackup(content){
+  var bkps=getBkps();
+  bkps.unshift({data:new Date().toLocaleString('pt-BR'),size:content.length,content:content});
+  if(bkps.length>5)bkps=bkps.slice(0,5);
+  try{localStorage.setItem('bd_bkp',JSON.stringify(bkps));}catch(e){console.warn('Backup muito grande para localStorage');}
+}
+function abrirBkp(){
+  var bkps=getBkps(),bl=document.getElementById('bkpList'),be=document.getElementById('bkpEmpty');
+  if(!bkps.length){bl.innerHTML='';be.style.display='block';}
+  else{
+    be.style.display='none';
+    bl.innerHTML=bkps.map(function(b,i){
+      return '<div class="bkp-item"><div class="bkp-info"><div class="bkp-date">'+b.data+'</div><div class="bkp-size">'+Math.round(b.size/1024)+'KB</div></div><button class="bkp-restore" onclick="restaurarBkp('+i+')">↩ RESTAURAR</button></div>';
+    }).join('');
+  }
+  document.getElementById('bkpModal').classList.add('open');
+}
+function restaurarBkp(i){
+  var bkps=getBkps();
+  if(!bkps[i])return;
+  if(confirm('Restaurar este backup? O index atual será substituído.')){
+    idxContent=bkps[i].content;
+    idxAtualizado=idxContent;
+    parsearModelos();
+    fecharModal('bkpModal');
+    alert('✓ Backup restaurado! Agora exporte o index.');
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// DOWNLOAD GLB
+// ══════════════════════════════════════════════════════════
+function dlGlb(){
+  if(!glbFile)return;
+  var url=URL.createObjectURL(glbFile);
+  var a=document.createElement('a');a.href=url;a.download=document.getElementById('nGlb').value||glbFile.name;
+  document.body.appendChild(a);a.click();document.body.removeChild(a);URL.revokeObjectURL(url);
+}
+
+// ══════════════════════════════════════════════════════════
+// COPIAR CÓDIGO
+// ══════════════════════════════════════════════════════════
+function copiar(){
+  navigator.clipboard.writeText(document.getElementById('codigo').textContent).then(function(){
+    var b=document.getElementById('cpbtn');b.textContent='✓ COPIADO';b.classList.add('ok');
+    setTimeout(function(){b.textContent='COPIAR';b.classList.remove('ok');},2000);
   });
 }
 
-// ─── RESETAR ───────────────────────────────────────────────────────────────────
-function resetar() {
-  imgBase64 = ''; glbFile = null;
-  document.getElementById('numModelo').value  = '';
-  document.getElementById('nomeGlb').value    = '';
-  document.getElementById('imgNome').textContent = '';
-  document.getElementById('imgPreview').style.display = 'none';
-  document.getElementById('imgBox').classList.remove('done');
-  document.getElementById('glbBox').classList.remove('done');
-  document.getElementById('glbOk').style.display   = 'none';
-  document.getElementById('glbIcon').style.display = '';
-  document.getElementById('glbLabel').style.display = '';
-  document.getElementById('glbNome').textContent = '';
-  document.getElementById('glbSize').textContent = '';
-  document.getElementById('resultPanel').style.display   = 'none';
-  document.getElementById('progressWrap').style.display  = 'none';
-  document.getElementById('progressFill').style.width    = '0%';
-  document.getElementById('imgInput').value = '';
-  document.getElementById('glbInput').value = '';
-  window.scrollTo({ top: 0, behavior: 'smooth' });
+// ══════════════════════════════════════════════════════════
+// PREVIEW FULL
+// ══════════════════════════════════════════════════════════
+function abrirFullPreview(){
+  var n=document.getElementById('numM').value||'—';
+  var g=document.getElementById('nGlb').value||'—';
+  if(!imgB64){alert('Selecione uma imagem primeiro!');return;}
+  document.getElementById('pfImg').src=imgB64;
+  document.getElementById('pfNum').textContent=n;
+  document.getElementById('pfBdg').textContent='#'+String(n).padStart(2,'0');
+  document.getElementById('pfDNum').textContent=n;
+  document.getElementById('pfDGlb').textContent=g;
+  document.getElementById('pfDSz').textContent=imgCompSz+'KB (original: '+Math.round(imgOrigSz/1024)+'KB)';
+  document.getElementById('pfDQ').textContent=Math.round(qualidade*100)+'%';
+  document.getElementById('previewModal').classList.add('open');
+}
+
+// ══════════════════════════════════════════════════════════
+// TAB EDITAR
+// ══════════════════════════════════════════════════════════
+function renderEdit(){
+  var c=document.getElementById('editContainer');
+  if(!modelos.length){c.innerHTML='<div class="empty">Carregue o index.html na aba ➕ Adicionar para ver os modelos.</div>';return;}
+  document.getElementById('expEditBtn').style.display='block';
+  filtrarModelos();
+}
+function filtrarModelos(){
+  var q=document.getElementById('srchNum').value.trim();
+  var lista=q?modelos.filter(function(m){return String(m.num).startsWith(q);}):modelos;
+  var c=document.getElementById('editContainer');
+  if(!lista.length){c.innerHTML='<div class="empty">Nenhum modelo encontrado.</div>';return;}
+  c.innerHTML='<div class="editlist">'+lista.map(function(m){
+    return '<div class="edititem">'+
+      '<div class="einum">'+m.num+'</div>'+
+      '<img class="eithumb" src="'+m.thumb+'" alt="" onclick="abrirEdit('+m.num+')" title="Clique para editar"/>'+
+      '<div class="eiinfo"><div class="eiglb">'+m.glb+'</div></div>'+
+      '<div class="eibtns">'+
+        '<button class="eibtn" onclick="moverModelo('+m.num+',-1)">↑</button>'+
+        '<button class="eibtn" onclick="moverModelo('+m.num+',1)">↓</button>'+
+        '<button class="eibtn" onclick="abrirEdit('+m.num+')">✏️ Editar</button>'+
+        '<button class="eibtn" onclick="duplicar('+m.num+')">⧉ Duplicar</button>'+
+        '<button class="eibtn del" onclick="deletarModelo('+m.num+')">🗑 Deletar</button>'+
+      '</div>'+
+    '</div>';
+  }).join('')+'</div>';
+}
+
+function moverModelo(num,dir){
+  var idx=modelos.findIndex(function(m){return m.num===num;});
+  var novo=idx+dir;
+  if(novo<0||novo>=modelos.length)return;
+  var tmp=modelos[idx];modelos[idx]=modelos[novo];modelos[novo]=tmp;
+  if(idxContent)reordenarNoIndex();
+  filtrarModelos();
+}
+
+function reordenarNoIndex(){
+  if(!idxContent)return;
+  // Extrair todos os cards em ordem atual
+  var cardRe=/<div class="card" data-model="\d+"[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/g;
+  var cards=[];var m;
+  while((m=cardRe.exec(idxContent))!==null)cards.push({num:parseInt(/<div class="card" data-model="(\d+)"/.exec(m[0])[1]),html:m[0]});
+  // Reordenar conforme modelos[]
+  var ordered=modelos.map(function(mod){return cards.find(function(c){return c.num===mod.num;});}).filter(Boolean);
+  // Substituir no index
+  var novo=idxContent;
+  var pos=0;
+  ordered.forEach(function(c){
+    var start=novo.indexOf(c.html,pos);
+    if(start!==-1){pos=start+c.html.length;}
+  });
+  // Rebuild: substituir bloco do grid
+  var gridStart=novo.indexOf('<div class="grid">');
+  var gridEnd=novo.indexOf('</div>\n\n<footer>');
+  if(gridEnd===-1)gridEnd=novo.indexOf('</div>\n<footer>');
+  if(gridStart!==-1&&gridEnd!==-1){
+    var before=novo.substring(0,gridStart+'<div class="grid">'.length);
+    var after=novo.substring(gridEnd);
+    var newGrid='\n'+ordered.map(function(c){return '\n'+c.html;}).join('\n')+'\n';
+    idxAtualizado=before+newGrid+after;
+  }
+}
+
+function deletarModelo(num){
+  if(!idxContent){alert('Carregue o index.html primeiro!');return;}
+  if(!confirm('Deletar modelo '+num+' do site? Esta ação afetará o index exportado.')){return;}
+  var re=new RegExp('<div class="card" data-model="'+num+'"[\\s\\S]*?<\\/div>\\s*<\\/div>\\s*<\\/div>');
+  idxAtualizado=(idxAtualizado||idxContent).replace(re,'');
+  idxContent=idxAtualizado;
+  modelos=modelos.filter(function(m){return m.num!==num;});
+  filtrarModelos();
+  alert('✓ Modelo '+num+' removido. Exporte o index para salvar.');
+}
+
+function abrirEdit(num){
+  editIdx=num;mImgB64='';
+  document.getElementById('mNum').textContent=num;
+  document.getElementById('mImgNm').textContent='';
+  document.getElementById('mImgPrv').style.display='none';
+  document.getElementById('mImgBox').classList.remove('done');
+  document.getElementById('mImgI').value='';
+  var m=modelos.find(function(x){return x.num===num;});
+  if(m)document.getElementById('mGlb').value=m.glb;
+  document.getElementById('editModal').classList.add('open');
+}
+function handleMImg(inp){
+  var f=inp.files[0];if(!f)return;
+  document.getElementById('mImgNm').textContent=f.name;
+  var r=new FileReader();
+  r.onload=function(e){
+    comprimirImg(e.target.result,function(c){
+      mImgB64=c;
+      var p=document.getElementById('mImgPrv');p.src=mImgB64;p.style.display='block';
+      document.getElementById('mImgBox').classList.add('done');
+    });
+  };
+  r.readAsDataURL(f);
+}
+function salvarEdit(){
+  if(!idxContent){alert('Carregue o index.html primeiro!');return;}
+  var num=editIdx,newGlb=document.getElementById('mGlb').value;
+  if(mImgB64){
+    var re=new RegExp('(<div class="card" data-model="'+num+'"[\\s\\S]*?<img src=")([^"]+)(")',);
+    idxAtualizado=(idxAtualizado||idxContent).replace(re,'$1'+mImgB64+'$3');
+    idxContent=idxAtualizado;
+    var m=modelos.find(function(x){return x.num===num;});if(m)m.thumb=mImgB64;
+  }
+  fecharModal('editModal');
+  alert('✓ Alteração salva! Exporte o index para aplicar.');
+  document.getElementById('expEditBtn').style.display='block';
+}
+
+function duplicar(num){
+  var m=modelos.find(function(x){return x.num===num;});if(!m)return;
+  stab('tAdd',document.querySelectorAll('.tab')[0]);
+  imgB64=m.thumb;imgOrigSz=Math.round(m.thumb.length*3/4);imgCompSz=Math.round(imgOrigSz/1024);
+  document.getElementById('iprv').src=imgB64;document.getElementById('iprv').style.display='block';
+  document.getElementById('imgBox').classList.add('done');
+  document.getElementById('imgNm').textContent='duplicado do modelo '+num;
+  var nums=modelos.map(function(x){return x.num;}).sort(function(a,b){return a-b;});
+  var prox=nums[nums.length-1]+1;
+  document.getElementById('numM').value=prox;document.getElementById('nGlb').value=prox+'.glb';
+  onNum();updPrv();
+  alert('Imagem do modelo '+num+' copiada! Ajuste o número e envie o .glb.');
+}
+
+// ══════════════════════════════════════════════════════════
+// STATS
+// ══════════════════════════════════════════════════════════
+function updStats(){
+  document.getElementById('stTotal').textContent=modelos.length||C.total;
+  document.getElementById('stSes').textContent=sesCount;
+  var h=getHist();
+  if(h.length){
+    document.getElementById('stUlt').textContent='#'+h[0].num;
+    document.getElementById('stUltSub').textContent=h[0].data;
+  }
+  if(idxContent){
+    var kb=Math.round(idxContent.length/1024);
+    document.getElementById('stIdx').textContent=kb>1024?(kb/1024).toFixed(1)+'MB':kb+'KB';
+    document.getElementById('stIdxSub').textContent=kb>800?'⚠️ Arquivo pesado':'✓ Tamanho ok';
+    // Detalhes por modelo
+    var det=modelos.map(function(m){
+      var kb=Math.round(m.thumb.length*3/4/1024);
+      var color=kb>100?'var(--re)':kb>60?'var(--gold)':'var(--gr)';
+      return '<div style="display:flex;align-items:center;gap:10px;padding:6px 0;border-bottom:1px solid #151515;font-size:.82rem">'+
+        '<span style="color:var(--pink);font-weight:700;min-width:36px">#'+m.num+'</span>'+
+        '<div style="flex:1;background:#1a1a1a;border-radius:2px;height:6px"><div style="width:'+Math.min(100,kb/2)+'%;height:100%;background:'+color+';border-radius:2px"></div></div>'+
+        '<span style="color:'+color+';min-width:50px;text-align:right">'+kb+'KB</span>'+
+      '</div>';
+    }).join('');
+    document.getElementById('statsDetalhes').innerHTML=det||'<div class="empty">Nenhum modelo encontrado.</div>';
+  }
+}
+
+// ══════════════════════════════════════════════════════════
+// HISTÓRICO
+// ══════════════════════════════════════════════════════════
+function getHist(){try{return JSON.parse(localStorage.getItem('bd_hist')||'[]');}catch(e){return[];}}
+function saveHist(h){localStorage.setItem('bd_hist',JSON.stringify(h));}
+function adicionarHist(num,glb,thumb){var h=getHist();h.unshift({num:num,glb:glb,thumb:thumb,data:new Date().toLocaleString('pt-BR')});saveHist(h);}
+function renderHist(){
+  var h=getHist(),c=document.getElementById('histC');
+  if(!h.length){c.innerHTML='<div class="empty">Nenhum cordão adicionado ainda.</div>';return;}
+  c.innerHTML='<div class="hlist">'+h.map(function(i,idx){
+    return '<div class="hitem"><div class="hnum">'+i.num+'</div><img class="hthumb" src="'+i.thumb+'" alt=""/><div class="hinfo"><div class="hglb">'+i.glb+'</div><div class="hdate">'+i.data+'</div></div><button class="hdel" onclick="delHist('+idx+')">✕</button></div>';
+  }).join('')+'</div>';
+}
+function delHist(i){var h=getHist();h.splice(i,1);saveHist(h);renderHist();}
+function limparHist(){if(confirm('Limpar todo o histórico?')){localStorage.removeItem('bd_hist');renderHist();}}
+
+// ══════════════════════════════════════════════════════════
+// CONFIG
+// ══════════════════════════════════════════════════════════
+function salSenha(){var v=document.getElementById('nSenha').value.trim();if(!v||v.length<6){alert('Mínimo 6 caracteres!');return;}C.senha=v;savC();document.getElementById('nSenha').value='';show('smsg');}
+function salTotal(){var v=parseInt(document.getElementById('totCfg').value);if(!v){alert('Valor inválido!');return;}C.total=v;savC();show('tmsg');}
+function salTempo(){var v=parseInt(document.getElementById('tSes').value);if(!v||v<5){alert('Mínimo 5 min!');return;}C.sesMin=v;savC();show('semsg');}
+function show(id){var e=document.getElementById(id);e.style.display='block';setTimeout(function(){e.style.display='none';},2500);}
+
+// ══════════════════════════════════════════════════════════
+// QR CODE (simples sem dependência)
+// ══════════════════════════════════════════════════════════
+function gerarQR(){
+  var url=document.getElementById('urlCat').value.trim();
+  if(!url){alert('Informe a URL!');return;}
+  C.url=url;savC();
+  // QR simples via API pública (qrserver)
+  var wrap=document.getElementById('qrWrap');
+  var canvas=document.getElementById('qrCanvas');
+  var img=new Image();
+  img.crossOrigin='anonymous';
+  img.onload=function(){
+    var ctx=canvas.getContext('2d');
+    ctx.clearRect(0,0,200,200);
+    ctx.drawImage(img,0,0,200,200);
+    wrap.style.display='block';
+  };
+  img.onerror=function(){
+    // Fallback: mostrar link
+    wrap.style.display='block';
+    var ctx=canvas.getContext('2d');
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,200,200);
+    ctx.fillStyle='#000';ctx.font='12px monospace';ctx.fillText('QR indisponível',10,100);
+  };
+  img.src='https://api.qrserver.com/v1/create-qr-code/?size=200x200&data='+encodeURIComponent(url);
+}
+function dlQR(){
+  var canvas=document.getElementById('qrCanvas');
+  var a=document.createElement('a');a.download='qrcode-bdstudio.png';a.href=canvas.toDataURL('image/png');a.click();
+}
+
+// ══════════════════════════════════════════════════════════
+// RESETAR
+// ══════════════════════════════════════════════════════════
+function resetar(){
+  imgB64='';imgOrigSz=0;imgCompSz=0;glbFile=null;idxContent='';idxAtualizado='';modelos=[];
+  ['numM','nGlb','imgI','glbI','idxInput'].forEach(function(id){var e=document.getElementById(id);if(e)e.value='';});
+  document.getElementById('numW').style.display='none';
+  document.getElementById('numM').className='fi';
+  document.getElementById('imgNm').textContent='';
+  document.getElementById('iprv').style.display='none';
+  document.getElementById('compInfo').textContent='—';
+  ['imgBox','glbBox','idxBox'].forEach(function(id){var e=document.getElementById(id);if(e)e.classList.remove('done');});
+  document.getElementById('gok').style.display='none';
+  document.getElementById('gico').style.display='';
+  document.getElementById('glbl').style.display='';
+  document.getElementById('gNm').textContent='';document.getElementById('gSz').textContent='';
+  document.getElementById('idxNm').textContent='';
+  document.getElementById('prvsec').style.display='none';
+  document.getElementById('rPanel').style.display='none';
+  document.getElementById('pwrap').style.display='none';
+  document.getElementById('pfill').style.width='0%';
+  document.getElementById('expbtn').disabled=true;
+  window.scrollTo({top:0,behavior:'smooth'});
 }
 </script>
 </body>
