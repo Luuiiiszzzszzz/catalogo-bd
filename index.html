@@ -1556,15 +1556,15 @@ function initThree() {
     prevMouseY = e.clientY;
     targetSpherical.theta -= dx * 0.008;
     targetSpherical.phi -= dy * 0.008;
-    targetSpherical.phi = Math.max(0.01, Math.min(Math.PI * 0.99, targetSpherical.phi));
+
   });
   c.addEventListener('wheel', function(e) {
     e.preventDefault();
     targetSpherical.radius = Math.max(0.5, Math.min(20, targetSpherical.radius + e.deltaY * 0.002));
   }, { passive: false });
   c.addEventListener('dblclick', function() {
-    targetSpherical.theta = 0.3;
-    targetSpherical.phi = 1.4;
+    targetSpherical.theta = 0;
+    targetSpherical.phi = Math.PI / 2;
   });
   c.style.cursor = 'grab';
 
@@ -1587,7 +1587,7 @@ function initThree() {
       var dy = e.touches[0].clientY - lt.y;
       targetSpherical.theta -= dx * 0.008;
       targetSpherical.phi -= dy * 0.008;
-      targetSpherical.phi = Math.max(0.01, Math.min(Math.PI * 0.99, targetSpherical.phi));
+  
       lt = { x: e.touches[0].clientX, y: e.touches[0].clientY };
     }
     if (e.touches.length === 2 && ld) {
@@ -1693,6 +1693,18 @@ function buildMesh(gltf, bin) {
     }
   }
 
+  // Aplicar rotação dos nós do arquivo GLB (respeitando orientação original)
+  if (gltf.nodes) {
+    for (var ni = 0; ni < gltf.nodes.length; ni++) {
+      var node = gltf.nodes[ni];
+      if (node.rotation) {
+        var q = new THREE.Quaternion(node.rotation[0], node.rotation[1], node.rotation[2], node.rotation[3]);
+        group.quaternion.copy(q);
+        break;
+      }
+    }
+  }
+
   // Center model at origin and fit to view
   var box = new THREE.Box3().setFromObject(group);
   var center = new THREE.Vector3();
@@ -1704,11 +1716,11 @@ function buildMesh(gltf, bin) {
   // Center model at origin
   group.position.sub(center);
 
-  // Set camera radius to fit model nicely
+  // Camera starts directly in front, level with model (phi = PI/2)
   var fov = camera.fov * (Math.PI / 180);
-  var dist = (maxDim / 2) / Math.tan(fov / 2) * 1.8;
-  spherical = { theta: 0.3, phi: 1.4, radius: dist };
-  targetSpherical = { theta: 0.3, phi: 1.4, radius: dist };
+  var dist = (maxDim / 2) / Math.tan(fov / 2) * 2.0;
+  spherical = { theta: 0, phi: Math.PI / 2, radius: dist };
+  targetSpherical = { theta: 0, phi: Math.PI / 2, radius: dist };
 
   scene.add(group);
   model3d = group;
